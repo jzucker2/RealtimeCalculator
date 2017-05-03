@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PubNub
 
 enum CalculatorLockedOperation: String {
     case add
@@ -99,6 +100,11 @@ enum CalculatorError: Error {
 
 class Calculator: NSObject {
     
+    override init() {
+        super.init()
+        Network.shared.client.addListener(self)
+    }
+    
     private var firstValue: Int = 0
     private var _currentValue: Int = 0
     public dynamic var currentValue: Int {
@@ -153,4 +159,18 @@ class Calculator: NSObject {
     
     
 
+}
+
+extension Calculator: PNObjectEventListener {
+    func client(_ client: PubNub, didReceiveMessage message: PNMessageResult) {
+        guard let expectedMessageBody = message.data.message as? [String: Any] else {
+            print("Received unexpected message body type: \(message.debugDescription)")
+            return
+        }
+        guard let result = expectedMessageBody[Constants.result] as? Int else {
+            print("Did not find result")
+            return
+        }
+        currentValue = result
+    }
 }

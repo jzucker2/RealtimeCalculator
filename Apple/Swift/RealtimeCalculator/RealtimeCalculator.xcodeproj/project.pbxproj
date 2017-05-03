@@ -10,6 +10,7 @@
 		1637F5230A63F795342C15D0 /* Pods_RealtimeCalculator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C406323C984B2F951DD35ED /* Pods_RealtimeCalculator.framework */; };
 		5145580F1EBA86E0007E501F /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5145580E1EBA86E0007E501F /* Calculator.swift */; };
 		514558111EBA87FC007E501F /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514558101EBA87FC007E501F /* Network.swift */; };
+		514558151EBA97DA007E501F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514558141EBA97DA007E501F /* Constants.swift */; };
 		516AF8351EBA85A800202439 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516AF8341EBA85A800202439 /* AppDelegate.swift */; };
 		516AF8371EBA85A800202439 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516AF8361EBA85A800202439 /* ViewController.swift */; };
 		516AF83A1EBA85A800202439 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 516AF8381EBA85A800202439 /* Main.storyboard */; };
@@ -40,6 +41,7 @@
 		06A2530ED4A88E31C5D8E23A /* Pods-RealtimeCalculator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealtimeCalculator.release.xcconfig"; path = "../../../Pods/Target Support Files/Pods-RealtimeCalculator/Pods-RealtimeCalculator.release.xcconfig"; sourceTree = "<group>"; };
 		5145580E1EBA86E0007E501F /* Calculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
 		514558101EBA87FC007E501F /* Network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		514558141EBA97DA007E501F /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		516AF8311EBA85A800202439 /* RealtimeCalculator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RealtimeCalculator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		516AF8341EBA85A800202439 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		516AF8361EBA85A800202439 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				516AF8361EBA85A800202439 /* ViewController.swift */,
 				5145580E1EBA86E0007E501F /* Calculator.swift */,
 				514558101EBA87FC007E501F /* Network.swift */,
+				514558141EBA97DA007E501F /* Constants.swift */,
 				516AF8381EBA85A800202439 /* Main.storyboard */,
 				516AF83B1EBA85A800202439 /* Assets.xcassets */,
 				516AF83D1EBA85A800202439 /* LaunchScreen.storyboard */,
@@ -343,6 +346,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				514558151EBA97DA007E501F /* Constants.swift in Sources */,
 				516AF8371EBA85A800202439 /* ViewController.swift in Sources */,
 				516AF8351EBA85A800202439 /* AppDelegate.swift in Sources */,
 				514558111EBA87FC007E501F /* Network.swift in Sources */,
