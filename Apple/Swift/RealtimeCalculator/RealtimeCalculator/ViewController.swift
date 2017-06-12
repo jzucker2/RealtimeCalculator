@@ -8,31 +8,112 @@
 
 import UIKit
 
+protocol CalculatorDisplayButton {
+    var displaySymbol: String { get }
+    var backgroundColor: UIColor { get }
+}
+
+extension CalculatorSpecialOperation: CalculatorDisplayButton {
+    
+    var displaySymbol: String {
+        switch self {
+        case .clear:
+            return "AC"
+        case .equal:
+            return "="
+        }
+    }
+    
+    var backgroundColor: UIColor {
+        return UIColor.cyan
+    }
+    
+}
+
+extension CalculatorLockedOperation: CalculatorDisplayButton {
+    
+    var displaySymbol: String {
+        switch self {
+        case .add:
+            return "+"
+        case .subtract:
+            return "-"
+        case .divide:
+            return "/"
+        case .mutiply:
+            return "x"
+        }
+    }
+    
+    var backgroundColor: UIColor {
+        return UIColor.orange
+    }
+    
+}
+
+extension CalculatorValue: CalculatorDisplayButton {
+    
+    var displaySymbol: String {
+        return "\(intValue)"
+    }
+    
+    var backgroundColor: UIColor {
+        return UIColor.lightGray
+    }
+    
+}
+
 class ViewController: UIViewController {
     
     var calculator: Calculator!
     
-    @IBOutlet weak var currentValueLabel: UILabel!
-    @IBOutlet weak var oneButton: UIButton!
-    @IBOutlet weak var twoButton: UIButton!
-    @IBOutlet weak var threeButton: UIButton!
-    @IBOutlet weak var equalButton: UIButton!
-    @IBOutlet weak var clearButton: UIButton!
-    @IBOutlet weak var addButton: UIButton!
+//    @IBOutlet weak var currentValueLabel: UILabel!
+//    @IBOutlet weak var oneButton: UIButton!
+//    @IBOutlet weak var twoButton: UIButton!
+//    @IBOutlet weak var threeButton: UIButton!
+//    @IBOutlet weak var equalButton: UIButton!
+//    @IBOutlet weak var clearButton: UIButton!
+//    @IBOutlet weak var addButton: UIButton!
+    
+    var collectionView: CalculatorCollectionView!
+    
+    struct CalculatorCollectionViewDataSource {
+        
+        let sections = [[CalculatorValue.one, CalculatorValue.two, CalculatorValue.three, CalculatorLockedOperation.mutiply], [CalculatorValue.four, CalculatorValue.five, CalculatorValue.six, CalculatorLockedOperation.add], [CalculatorValue.seven, CalculatorValue.eight, CalculatorValue.nine, CalculatorLockedOperation.subtract], [CalculatorValue.zero, CalculatorSpecialOperation.clear, CalculatorSpecialOperation.equal, CalculatorLockedOperation.divide]]
+        
+        subscript(section: Int) -> [CalculatorDisplayButton] {
+            guard let calculatorDisplayButtonSection = sections[section] as? [CalculatorDisplayButton] else {
+                fatalError()
+            }
+            return calculatorDisplayButtonSection
+        }
+        
+        subscript(indexPath: IndexPath) -> CalculatorDisplayButton {
+            return self[indexPath.section][indexPath.item]
+        }
+        
+    }
+    
+    let dataSource = CalculatorCollectionViewDataSource()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        oneButton.tag = CalculatorValue.one.intValue
-        twoButton.tag = CalculatorValue.two.intValue
-        threeButton.tag = CalculatorValue.three.intValue
-        
-        oneButton.addTarget(self, action: #selector(valueButtonPressed(sender:)), for: .touchUpInside)
-        twoButton.addTarget(self, action: #selector(valueButtonPressed(sender:)), for: .touchUpInside)
-        threeButton.addTarget(self, action: #selector(valueButtonPressed(sender:)), for: .touchUpInside)
-        equalButton.addTarget(self, action: #selector(equalButtonPressed(sender:)), for: .touchUpInside)
-        addButton.addTarget(self, action: #selector(lockedOperationButtonPressed(sender:)), for: .touchUpInside)
-        clearButton.addTarget(self, action: #selector(clearButtonPressed(sender:)), for: .touchUpInside)
+        let layout = CalculatorCollectionViewLayout()
+        self.collectionView = CalculatorCollectionView(frame: view.bounds, collectionViewLayout: layout)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        view.addSubview(collectionView)
+//        oneButton.tag = CalculatorValue.one.intValue
+//        twoButton.tag = CalculatorValue.two.intValue
+//        threeButton.tag = CalculatorValue.three.intValue
+//
+//        oneButton.addTarget(self, action: #selector(valueButtonPressed(sender:)), for: .touchUpInside)
+//        twoButton.addTarget(self, action: #selector(valueButtonPressed(sender:)), for: .touchUpInside)
+//        threeButton.addTarget(self, action: #selector(valueButtonPressed(sender:)), for: .touchUpInside)
+//        equalButton.addTarget(self, action: #selector(equalButtonPressed(sender:)), for: .touchUpInside)
+//        addButton.addTarget(self, action: #selector(lockedOperationButtonPressed(sender:)), for: .touchUpInside)
+//        clearButton.addTarget(self, action: #selector(clearButtonPressed(sender:)), for: .touchUpInside)
     }
     
     private var observerVCKVOContext = 0
@@ -77,7 +158,7 @@ class ViewController: UIViewController {
             case #keyPath(Calculator.currentValue):
             // Do KVO based update here
                 print("new current value in view controller: \(calculator.currentValue)")
-                currentValueLabel.text = "\(calculator.currentValue)"
+//                currentValueLabel.text = "\(calculator.currentValue)"
             default:
                 fatalError("We did not implement this keyPath (\(existingKeyPath)) so how did we end up here?")
             }
@@ -107,5 +188,55 @@ class ViewController: UIViewController {
     }
 
 
+}
+
+extension ViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("\(#function)")
+    }
+    
+}
+
+extension ViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        switch section {
+        case 0:
+            return CGSize(width: view.bounds.width, height: 100.0)
+        default:
+            return CGSize.zero
+        }
+    }
+    
+}
+
+extension ViewController: UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return dataSource.sections.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return dataSource[section].count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let calculatorHeaderView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CalculatorDisplayHeader.reuseIdentifier(), for: indexPath) as? CalculatorDisplayHeader else {
+            fatalError()
+        }
+        calculatorHeaderView.update(using: calculator.currentValue)
+        return calculatorHeaderView
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let calculatorCell = collectionView.dequeueReusableCell(withReuseIdentifier: CalculatorCollectionViewCell.reuseIdentifier(), for: indexPath) as? CalculatorCollectionViewCell else {
+            fatalError()
+        }
+        let calculatorButton = dataSource[indexPath]
+        calculatorCell.update(with: calculatorButton)
+        return calculatorCell
+    }
+    
 }
 
