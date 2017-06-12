@@ -107,7 +107,7 @@ class Calculator: NSObject {
     
     private var firstValue: Int = 0
     private var _currentValue: Int = 0
-    public dynamic var currentValue: Int {
+    @objc public dynamic var currentValue: Int {
         get {
             return self._currentValue
         }

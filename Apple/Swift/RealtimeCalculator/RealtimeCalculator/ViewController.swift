@@ -86,15 +86,15 @@ class ViewController: UIViewController {
         }
     }
     
-    func lockedOperationButtonPressed(sender: UIButton) {
+    @objc func lockedOperationButtonPressed(sender: UIButton) {
         _ = try! calculator.add(lockedOperation: .add)
     }
     
-    func clearButtonPressed(sender: UIButton) {
+    @objc func clearButtonPressed(sender: UIButton) {
         _ = try! calculator.perform(special: .clear)
     }
     
-    func valueButtonPressed(sender: UIButton) {
+    @objc func valueButtonPressed(sender: UIButton) {
         guard let actualValue = CalculatorValue.value(from: sender.tag) else {
             print("nothing to input!!!!!!!")
             return
@@ -102,7 +102,7 @@ class ViewController: UIViewController {
         _ = try! calculator.add(value: actualValue)
     }
     
-    func equalButtonPressed(sender: UIButton) {
+    @objc func equalButtonPressed(sender: UIButton) {
         _ = try! calculator.perform(special: .equal)
     }
 
