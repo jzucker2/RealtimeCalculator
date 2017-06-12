@@ -158,6 +158,9 @@ class ViewController: UIViewController {
             case #keyPath(Calculator.currentValue):
             // Do KVO based update here
                 print("new current value in view controller: \(calculator.currentValue)")
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
 //                currentValueLabel.text = "\(calculator.currentValue)"
             default:
                 fatalError("We did not implement this keyPath (\(existingKeyPath)) so how did we end up here?")
