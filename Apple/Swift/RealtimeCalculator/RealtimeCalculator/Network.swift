@@ -32,7 +32,7 @@ class Network: NSObject {
         client.subscribeToChannels([Constants.calculatorChannel], withPresence: true)
     }
     
-    func publish(firstValue: Int, operation: CalculatorLockedOperation, secondValue: Int) {
+    func publish(firstValue: Double, operation: CalculatorLockedOperation, secondValue: Double) {
         let messageBody: [String: Any] = [
             Constants.firstValue: NSNumber(value: firstValue),
             Constants.operation: operation.rawValue,
@@ -52,6 +52,10 @@ class Network: NSObject {
 }
 
 extension Network: PNObjectEventListener {
+    
+    func client(_ client: PubNub, didReceive status: PNStatus) {
+        print("\(status.debugDescription)")
+    }
     
 //    func client(_ client: PubNub, didReceiveMessage message: PNMessageResult) {
 //        print("message: \(message.debugDescription)")

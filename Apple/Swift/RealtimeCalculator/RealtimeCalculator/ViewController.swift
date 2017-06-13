@@ -199,7 +199,7 @@ class ViewController: UIViewController {
     
     // UI Updates
     
-    func updateHeaderLabel(with currentResult: Int) {
+    func updateHeaderLabel(with currentResult: Double) {
         DispatchQueue.main.async {
             self.resultView.update(using: currentResult)
         }

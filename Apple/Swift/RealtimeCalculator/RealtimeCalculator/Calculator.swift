@@ -63,6 +63,10 @@ enum CalculatorValue: String {
         }
     }
     
+    var doubleValue: Double {
+        return Double(intValue)
+    }
+    
     var intValue: Int {
         switch self {
         case .zero:
@@ -105,9 +109,9 @@ class Calculator: NSObject {
         Network.shared.addListener(self)
     }
     
-    private var firstValue: Int = 0
-    private var _currentValue: Int = 0
-    @objc public dynamic var currentValue: Int {
+    private var firstValue: Double = 0
+    private var _currentValue: Double = 0
+    @objc public dynamic var currentValue: Double {
         get {
             return self._currentValue
         }
@@ -128,7 +132,7 @@ class Calculator: NSObject {
             firstValue = currentValue
             currentValue = 0
         }
-        currentValue = (currentValue * 10) + value.intValue
+        currentValue = (currentValue * 10.0) + value.doubleValue
         return true
     }
     
@@ -167,7 +171,7 @@ extension Calculator: PNObjectEventListener {
             print("Received unexpected message body type: \(message.debugDescription)")
             return
         }
-        guard let result = expectedMessageBody[Constants.result] as? Int else {
+        guard let result = expectedMessageBody[Constants.result] as? Double else {
             print("Did not find result")
             return
         }

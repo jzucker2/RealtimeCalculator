@@ -30,7 +30,7 @@ class CalculatorDisplayHeader: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(using value: Int) {
+    func update(using value: Double) {
         update(with: "\(value)")
     }
     
