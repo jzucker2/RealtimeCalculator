@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let bounds = UIScreen.main.bounds
         let window = UIWindow(frame: bounds)
         self.window = window
-        let mainViewController = ViewController(calculator: calculator)
+        let mainViewController = MainViewController(calculator: calculator)
         let navController = UINavigationController(rootViewController: mainViewController)
         self.window?.rootViewController = navController
         self.window?.makeKeyAndVisible()
