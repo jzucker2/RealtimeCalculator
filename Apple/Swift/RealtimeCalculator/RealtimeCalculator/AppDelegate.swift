@@ -12,16 +12,22 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-    let calculator = Calculator()
+    
+    let network = Network()
+    lazy var calculator: Calculator = {
+        return Calculator(network: self.network)
+    } ()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        guard let mainViewController = self.window?.rootViewController as? ViewController else {
-            fatalError("We only expect the one view controller")
-        }
-        mainViewController.calculator = calculator
+        let bounds = UIScreen.main.bounds
+        let window = UIWindow(frame: bounds)
+        self.window = window
+        let mainViewController = ViewController(calculator: calculator)
+        let navController = UINavigationController(rootViewController: mainViewController)
+        self.window?.rootViewController = navController
+        self.window?.makeKeyAndVisible()
         return true
     }
 

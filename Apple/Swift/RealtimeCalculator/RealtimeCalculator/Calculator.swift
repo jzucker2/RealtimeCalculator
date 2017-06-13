@@ -9,19 +9,19 @@
 import UIKit
 import PubNub
 
-enum CalculatorLockedOperation: String {
+public enum CalculatorLockedOperation: String {
     case add
     case subtract
     case mutiply
     case divide
 }
 
-enum CalculatorSpecialOperation: String {
+public enum CalculatorSpecialOperation: String {
     case clear
     case equal
 }
 
-enum CalculatorValue: String {
+public enum CalculatorValue: String {
     case zero
     case one
     case two
@@ -104,9 +104,12 @@ enum CalculatorError: Error {
 
 class Calculator: NSObject {
     
-    override init() {
+    let network: Network
+    
+    required init(network: Network) {
+        self.network = network
         super.init()
-        Network.shared.addListener(self)
+        network.addListener(self)
     }
     
     private var firstValue: Double = 0
@@ -151,7 +154,7 @@ class Calculator: NSObject {
             print("Nothing to publish!")
             return
         }
-        Network.shared.publish(firstValue: firstValue, operation: actualLockedOperation, secondValue: currentValue)
+        network.publish(firstValue: firstValue, operation: actualLockedOperation, secondValue: currentValue)
         firstValue = 0
     }
     
@@ -175,7 +178,7 @@ extension Calculator: PNObjectEventListener {
             print("Did not find result")
             return
         }
-        guard Network.shared.uuid == message.data.publisher else {
+        guard network.uuid == message.data.publisher else {
             print("Published by someone else: \(message.data.publisher)")
             return
         }
