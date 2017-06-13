@@ -13,7 +13,15 @@ class Network: NSObject {
     
     static let shared = Network()
     
-    let client: PubNub
+    private let client: PubNub
+    
+    var uuid: String {
+        return client.uuid()
+    }
+    
+    func addListener(listener: PNObjectEventListener) {
+        client.addListener(listener)
+    }
     
     override init() {
         let config = PNConfiguration(publishKey: Constants.pubKey, subscribeKey: Constants.subKey)
@@ -26,9 +34,9 @@ class Network: NSObject {
     
     func publish(firstValue: Int, operation: CalculatorLockedOperation, secondValue: Int) {
         let messageBody: [String: Any] = [
-            "firstValue": NSNumber(value: firstValue),
-            "operation": operation.rawValue,
-            "secondValue": NSNumber(value: secondValue),
+            Constants.firstValue: NSNumber(value: firstValue),
+            Constants.operation: operation.rawValue,
+            Constants.secondValue: NSNumber(value: secondValue),
         ]
         client.publish(messageBody, toChannel: Constants.calculatorChannel) { (status) in
             if (status.isError) {

@@ -102,7 +102,7 @@ class Calculator: NSObject {
     
     override init() {
         super.init()
-        Network.shared.client.addListener(self)
+        Network.shared.addListener(self)
     }
     
     private var firstValue: Int = 0
@@ -171,6 +171,34 @@ extension Calculator: PNObjectEventListener {
             print("Did not find result")
             return
         }
+        guard Network.shared.uuid == message.data.publisher else {
+            print("Published by someone else: \(message.data.publisher)")
+            return
+        }
         currentValue = result
     }
+}
+
+extension Calculator {
+    
+    func performOperation(for calculatorButton: CalculatorDisplayButton) throws -> Bool {
+        do {
+            switch calculatorButton {
+            case let valueButton as CalculatorValue:
+                print("valueButton: \(valueButton)")
+                return try self.add(value: valueButton)
+            case let lockedOperationButton as CalculatorLockedOperation:
+                print("lockedOperation: \(lockedOperationButton)")
+                return try self.add(lockedOperation: lockedOperationButton)
+            case let specialOperationButton as CalculatorSpecialOperation:
+                print("specialOperation: \(specialOperationButton)")
+                return try self.perform(special: specialOperationButton)
+            default:
+                fatalError()
+            }
+        } catch {
+            throw error
+        }
+    }
+    
 }
