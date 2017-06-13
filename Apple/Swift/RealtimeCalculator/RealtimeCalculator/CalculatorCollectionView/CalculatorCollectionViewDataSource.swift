@@ -92,3 +92,60 @@ struct CalculatorCollectionViewDataSource {
     }
     
 }
+
+typealias ResultUpdateBlock = (CalculatorResultHeaderView) -> (Double)
+
+class CalculatorCollectionViewDataSourceAdapter: NSObject {
+    let dataSource: CalculatorCollectionViewDataSource
+    weak var collectionView: CalculatorCollectionView?
+    let resultUpdate: ResultUpdateBlock
+    required init(collectionView: CalculatorCollectionView, dataSource: CalculatorCollectionViewDataSource, with resultUpdate: @escaping ResultUpdateBlock) {
+        self.collectionView = collectionView
+        self.dataSource = dataSource
+        self.resultUpdate = resultUpdate
+        super.init()
+    }
+    
+    func updateResultHeaderView(at indexPath: IndexPath) {
+        guard let resultHeader = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: indexPath) as? CalculatorResultHeaderView else {
+            fatalError()
+        }
+        let updatedResult = resultUpdate(resultHeader)
+        resultHeader.update(using: updatedResult)
+    }
+    
+}
+
+extension CalculatorCollectionViewDataSourceAdapter: UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return dataSource.sections.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return dataSource[section].count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard let calculatorHeaderView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CalculatorResultHeaderView.reuseIdentifier(), for: indexPath) as? CalculatorResultHeaderView else {
+            fatalError()
+        }
+        let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
+        guard indexPath == firstHeaderIndexPath else {
+            return calculatorHeaderView
+        }
+        let result = resultUpdate(calculatorHeaderView)
+        calculatorHeaderView.update(using: result)
+        return calculatorHeaderView
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let calculatorCell = collectionView.dequeueReusableCell(withReuseIdentifier: CalculatorCollectionViewCell.reuseIdentifier(), for: indexPath) as? CalculatorCollectionViewCell else {
+            fatalError()
+        }
+        let calculatorButton = dataSource[indexPath]
+        calculatorCell.update(with: calculatorButton)
+        return calculatorCell
+    }
+    
+}

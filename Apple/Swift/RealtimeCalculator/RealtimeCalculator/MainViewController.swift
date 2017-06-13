@@ -12,9 +12,17 @@ class MainViewController: UIViewController {
     
     let calculator: Calculator
     
+    let stackView: UIStackView = {
+        let settingUpStackView = UIStackView(frame: .zero)
+        settingUpStackView.axis = .vertical
+        settingUpStackView.distribution = .fill
+        settingUpStackView.alignment = .fill
+        return settingUpStackView
+    } ()
     var collectionView: CalculatorCollectionView!
     
     let dataSource = CalculatorCollectionViewDataSource()
+    var dataSourceAdapter: CalculatorCollectionViewDataSourceAdapter!
     var resultView: CalculatorResultHeaderView?
     
     var observingCurrentValueToken: NSKeyValueObservation?
@@ -31,25 +39,23 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        view.addSubview(stackView)
+        stackView.frame = view.frame
         let layout = CalculatorCollectionViewLayout()
         self.collectionView = CalculatorCollectionView(frame: view.bounds, collectionViewLayout: layout)
-        collectionView.dataSource = self
+        dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, with: { (headerView) -> (Double) in
+            return self.calculator.currentValue
+        })
+        collectionView.dataSource = dataSourceAdapter
         collectionView.delegate = self
-        view.addSubview(collectionView)
+        stackView.addArrangedSubview(collectionView)
         collectionView.reloadData()
         self.observingCurrentValueToken = calculator.observe(\.currentValue, changeHandler: { (calculator, change) in
-            self.updateHeaderLabel(with: calculator.currentValue)
+            let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
+            self.dataSourceAdapter.updateResultHeaderView(at: firstHeaderIndexPath)
         })
+        stackView.setNeedsLayout()
     }
-    
-    // UI Updates
-    
-    func updateHeaderLabel(with currentResult: Double) {
-        DispatchQueue.main.async {
-            self.resultView?.update(using: currentResult)
-        }
-    }
-
 
 }
 
@@ -76,40 +82,6 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
         default:
             return CGSize.zero
         }
-    }
-    
-}
-
-extension MainViewController: UICollectionViewDataSource {
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return dataSource.sections.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource[section].count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        guard let calculatorHeaderView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CalculatorResultHeaderView.reuseIdentifier(), for: indexPath) as? CalculatorResultHeaderView else {
-            fatalError()
-        }
-        let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
-        guard indexPath == firstHeaderIndexPath else {
-            return calculatorHeaderView
-        }
-        self.resultView = calculatorHeaderView
-        calculatorHeaderView.update(using: calculator.currentValue)
-        return calculatorHeaderView
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let calculatorCell = collectionView.dequeueReusableCell(withReuseIdentifier: CalculatorCollectionViewCell.reuseIdentifier(), for: indexPath) as? CalculatorCollectionViewCell else {
-            fatalError()
-        }
-        let calculatorButton = dataSource[indexPath]
-        calculatorCell.update(with: calculatorButton)
-        return calculatorCell
     }
     
 }
