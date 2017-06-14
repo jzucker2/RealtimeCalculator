@@ -11,24 +11,28 @@ import PubNub
 
 class CalculatorResult: NSObject {
     let publisher: String
-    let firstValue: Double
-    let secondValue: Double
-    let operation: CalculatorLockedOperation
+    let currentTotal: Double?
+    let inputValue: Double?
+    let operation: CalculatorLockedOperation?
     let result: Double?
     let errorString: String?
     let time: Date
     
-    convenience init?(publisher: String, time: Date, firstValue: Double, secondValue: Double, operationString: String, result: Double?, errorString: String? = nil) {
+    convenience init?(publisher: String, time: Date, currentTotal: Double, inputValue: Double, operationString: String, result: Double?, errorString: String? = nil) {
         guard let operation = CalculatorLockedOperation(rawValue: operationString) else {
             return nil
         }
-        self.init(publisher: publisher, time: time, firstValue: firstValue, secondValue: secondValue, operation: operation, result: result, errorString: errorString)
+        self.init(publisher: publisher, time: time, currentTotal: currentTotal, inputValue: inputValue, operation: operation, result: result, errorString: errorString)
     }
     
-    required init(publisher: String, time: Date, firstValue: Double, secondValue: Double, operation: CalculatorLockedOperation, result: Double?, errorString: String? = nil) {
+    static func localResult(publisher: String, currentTotal: Double? = nil, inputValue: Double? = nil, operation: CalculatorLockedOperation = .unknown, result: Double? = nil, errorString: String? = nil) -> CalculatorResult {
+        return CalculatorResult(publisher: publisher, time: Date(), currentTotal: currentTotal, inputValue: inputValue, operation: operation, result: result, errorString: errorString)
+    }
+    
+    required init(publisher: String, time: Date, currentTotal: Double?, inputValue: Double?, operation: CalculatorLockedOperation, result: Double?, errorString: String? = nil) {
         self.publisher = publisher
-        self.firstValue = firstValue
-        self.secondValue = secondValue
+        self.currentTotal = currentTotal
+        self.inputValue = inputValue
         self.operation = operation
         self.result = result
         self.errorString = errorString
@@ -40,23 +44,14 @@ class CalculatorResult: NSObject {
 
 extension CalculatorResult {
     
-//    func generateOtherPublisherString() -> String {
-//        let
-//        let finalString = "\()"
-//    }
-    
-}
-
-extension CalculatorResult {
-    
     convenience init?(message: PNMessageResult) {
         guard let resultDict = message.data.message as? [String: Any] else {
             return nil
         }
-        guard let actualFirstValue = resultDict[Constants.firstValue] as? Double else {
+        guard let actualCurrentTotal = resultDict[Constants.currentTotal] as? Double else {
             return nil
         }
-        guard let actualSecondValue = resultDict[Constants.secondValue] as? Double else {
+        guard let actualInputValue = resultDict[Constants.inputValue] as? Double else {
             return nil
         }
         guard let actualOperationString = resultDict[Constants.operation] as? String else {
@@ -64,7 +59,7 @@ extension CalculatorResult {
         }
         let result = resultDict[Constants.result] as? Double
 //        var errorString = resultDict[Constants.errorString] as? String
-        self.init(publisher: message.data.publisher, time: Date(), firstValue: actualFirstValue, secondValue: actualSecondValue, operationString: actualOperationString, result: result, errorString: nil)
+        self.init(publisher: message.data.publisher, time: Date(), currentTotal: actualCurrentTotal, inputValue: actualInputValue, operationString: actualOperationString, result: result, errorString: nil)
     }
     
 }
@@ -74,6 +69,7 @@ public enum CalculatorLockedOperation: String {
     case subtract
     case multiply
     case divide
+    case unknown
 }
 
 public enum CalculatorSpecialOperation: String {

@@ -24,10 +24,10 @@ class MainViewController: UIViewController {
     
     let dataSource = CalculatorCollectionViewDataSource()
     var dataSourceAdapter: CalculatorCollectionViewDataSourceAdapter!
-    var resultView: CalculatorResultHeaderViewOld?
     
-    var observingCurrentValueToken: NSKeyValueObservation?
-    var observingLastResultValueToken: NSKeyValueObservation?
+    var observingMyRemoteResultToken: NSKeyValueObservation?
+    var observingOtherRemoteResultValueToken: NSKeyValueObservation?
+    var observingInputValueToken: NSKeyValueObservation?
     
     required init(calculator: Calculator) {
         self.calculator = calculator
@@ -45,25 +45,44 @@ class MainViewController: UIViewController {
         stackView.frame = view.frame
         let layout = CalculatorCollectionViewLayout()
         self.collectionView = CalculatorCollectionView(frame: view.bounds, collectionViewLayout: layout)
-        let currentResultUpdate: CurrentResultUpdateBlock = { (headerView) in
-            return self.calculator.currentValue
+        let currentResultUpdate: ResultUpdateBlock = { (headerFooterView) in
+            switch headerFooterView {
+            case _ as CalculatorResultHeaderView:
+                return self.calculator.myRemoteResult ?? self.calculator.myLocalResult
+            case _ as CalculatorResultFooterView:
+                return self.calculator.otherResult
+            default:
+                fatalError()
+            }
+            return self.calculator.myRemoteResult
         }
-        let lastResultUpdate: LastResultUpdateBlock = { (footerView) in
-            return self.calculator.lastResult
-        }
-//        dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, wi)
-        dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, with: currentResultUpdate, and: lastResultUpdate)
+        dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, with: currentResultUpdate)
         collectionView.dataSource = dataSourceAdapter
         collectionView.delegate = self
         stackView.addArrangedSubview(collectionView)
         collectionView.reloadData()
-        self.observingCurrentValueToken = calculator.observe(\.currentValue, changeHandler: { (calculator, change) in
+        self.observingMyRemoteResultToken = calculator.observe(\.myRemoteResult, changeHandler: { (calculator, change) in
             let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
-            self.dataSourceAdapter.updateResultHeaderView(at: firstHeaderIndexPath)
+            guard let headerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: firstHeaderIndexPath) as? CalculatorResultHeaderView else {
+                fatalError()
+            }
+            self.dataSourceAdapter.update(supplementary: headerView)
         })
-        self.observingLastResultValueToken = calculator.observe(\.lastResult, changeHandler: { (calculator, change) in
+        self.observingInputValueToken = calculator.observe(\.inputValue, changeHandler: { (calculator, change) in
+            let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
+            guard let headerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: firstHeaderIndexPath) as? CalculatorResultHeaderView else {
+                fatalError()
+            }
+            self.dataSourceAdapter.update(supplementary: headerView)
+        })
+        self.observingOtherRemoteResultValueToken = calculator.observe(\.otherResult, changeHandler: { (calculator, change) in
             let lastFooterIndexPath = IndexPath(item: 0, section: 3)
-            self.dataSourceAdapter.updateLastResultFooterView(at: lastFooterIndexPath)
+//            self.dataSourceAdapter.updateSupplementary(of: UICollectionElementKindSectionFooter, at: lastFooterIndexPath)
+//            self.dataSourceAdapter.updateLastResultFooterView(at: lastFooterIndexPath)
+            guard let footerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: lastFooterIndexPath) as? CalculatorResultFooterView else {
+                fatalError()
+            }
+            self.dataSourceAdapter.update(supplementary: footerView)
         })
         stackView.setNeedsLayout()
     }
