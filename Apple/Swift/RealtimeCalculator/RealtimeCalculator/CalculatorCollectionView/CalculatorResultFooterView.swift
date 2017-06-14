@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CalculatorResultFooterView: UICollectionReusableView {
+class CalculatorResultHeaderFooterView: UICollectionReusableView {
     
     let resultLabel = UILabel(frame: .zero)
     let stackView = UIStackView(frame: .zero)
@@ -52,4 +52,12 @@ class CalculatorResultFooterView: UICollectionReusableView {
         }
         timeLabel.text = "\(actualResult.time)"
     }
+}
+
+final class CalculatorResultFooterView: CalculatorResultHeaderFooterView {
+    
+}
+
+final class CalculatorResultHeaderView: CalculatorResultHeaderFooterView {
+    
 }

@@ -24,7 +24,7 @@ class MainViewController: UIViewController {
     
     let dataSource = CalculatorCollectionViewDataSource()
     var dataSourceAdapter: CalculatorCollectionViewDataSourceAdapter!
-    var resultView: CalculatorResultHeaderView?
+    var resultView: CalculatorResultHeaderViewOld?
     
     var observingCurrentValueToken: NSKeyValueObservation?
     var observingLastResultValueToken: NSKeyValueObservation?

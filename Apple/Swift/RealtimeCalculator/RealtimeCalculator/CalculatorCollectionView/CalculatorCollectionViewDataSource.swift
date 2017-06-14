@@ -95,41 +95,50 @@ struct CalculatorCollectionViewDataSource {
 
 typealias CurrentResultUpdateBlock = (CalculatorResultHeaderView) -> (Double)
 typealias LastResultUpdateBlock = (CalculatorResultFooterView) -> (CalculatorResult?)
+typealias ResultUpdateBlock = (CalculatorResultHeaderFooterView) -> (CalculatorResult?)
 
 class CalculatorCollectionViewDataSourceAdapter: NSObject {
     let dataSource: CalculatorCollectionViewDataSource
     weak var collectionView: CalculatorCollectionView?
-    let currentResultUpdate: CurrentResultUpdateBlock
-    let lastResultUpdate: LastResultUpdateBlock
+//    let currentResultUpdate: CurrentResultUpdateBlock
+//    let lastResultUpdate: LastResultUpdateBlock
+    let resultUpdate: ResultUpdateBlock
     
-    required init(collectionView: CalculatorCollectionView, dataSource: CalculatorCollectionViewDataSource, with currentResultUpdate: @escaping CurrentResultUpdateBlock, and lastResultUpdate: @escaping LastResultUpdateBlock) {
+    required init(collectionView: CalculatorCollectionView, dataSource: CalculatorCollectionViewDataSource, with resultUpdate: @escaping ResultUpdateBlock) {
         self.collectionView = collectionView
         self.dataSource = dataSource
-        self.currentResultUpdate = currentResultUpdate
-        self.lastResultUpdate = lastResultUpdate
+        self.resultUpdate = resultUpdate
         super.init()
     }
     
-    func updateResultHeaderView(at indexPath: IndexPath) {
-        guard let resultHeader = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: indexPath) as? CalculatorResultHeaderView else {
+    func updateSupplementary(of kind: String, at indexPath: IndexPath) {
+        guard let resultHeaderFooterView = collectionView?.supplementaryView(forElementKind: kind, at: indexPath) as? CalculatorResultHeaderFooterView else {
             fatalError()
         }
-        let updatedResult = currentResultUpdate(resultHeader)
-        resultHeader.update(using: updatedResult)
+        let updatedResult = resultUpdate(resultHeaderFooterView)
+        resultHeaderFooterView.update(with: updatedResult)
     }
     
-    func updateLastResultFooterView(at indexPath: IndexPath) {
-        guard let resultFooter = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: indexPath) as? CalculatorResultFooterView else {
-            fatalError()
-        }
-        guard let actualLastResult = lastResultUpdate(resultFooter) else {
-            print("No last result!!!!!!!!!!!!!!!!!!!!!!!!")
-            return
-        }
-        resultFooter.update(with: actualLastResult)
+//    func updateResultHeaderView(at indexPath: IndexPath) {
+//        guard let resultHeader = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: indexPath) as? CalculatorResultHeaderViewOld else {
+//            fatalError()
+//        }
 //        let updatedResult = currentResultUpdate(resultHeader)
 //        resultHeader.update(using: updatedResult)
-    }
+//    }
+//
+//    func updateLastResultFooterView(at indexPath: IndexPath) {
+//        guard let resultFooter = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: indexPath) as? CalculatorResultFooterView else {
+//            fatalError()
+//        }
+//        guard let actualLastResult = lastResultUpdate(resultFooter) else {
+//            print("No last result!!!!!!!!!!!!!!!!!!!!!!!!")
+//            return
+//        }
+//        resultFooter.update(with: actualLastResult)
+////        let updatedResult = currentResultUpdate(resultHeader)
+////        resultHeader.update(using: updatedResult)
+//    }
     
 }
 
@@ -153,8 +162,10 @@ extension CalculatorCollectionViewDataSourceAdapter: UICollectionViewDataSource 
             guard indexPath == firstHeaderIndexPath else {
                 return calculatorHeaderView
             }
-            let result = currentResultUpdate(calculatorHeaderView)
-            calculatorHeaderView.update(using: result)
+//            let result = currentResultUpdate(calculatorHeaderView)
+//            calculatorHeaderView.update(using: result)
+            let result = resultUpdate(calculatorHeaderView)
+            calculatorHeaderView.update(with: result)
             return calculatorHeaderView
         case UICollectionElementKindSectionFooter:
             guard let calculatorFooterView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CalculatorResultFooterView.reuseIdentifier(), for: indexPath) as? CalculatorResultFooterView else {
@@ -164,11 +175,13 @@ extension CalculatorCollectionViewDataSourceAdapter: UICollectionViewDataSource 
             guard indexPath == firstFooterIndexPath else {
                 return calculatorFooterView
             }
-            let lastResult = lastResultUpdate(calculatorFooterView)
-            calculatorFooterView.update(with: lastResult)
+//            let lastResult = lastResultUpdate(calculatorFooterView)
+//            calculatorFooterView.update(with: lastResult)
 //            let result = resultUpdate(calculatorHeaderView)
 //            calculatorHeaderView.update(using: result)
 //            return calculatorHeaderView
+            let result = resultUpdate(calculatorFooterView)
+            calculatorFooterView.update(with: result)
             return calculatorFooterView
         default:
             fatalError()

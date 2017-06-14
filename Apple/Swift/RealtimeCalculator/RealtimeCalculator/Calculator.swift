@@ -22,16 +22,17 @@ class Calculator: NSObject {
     }
     
     private var firstValue: Double = 0
-    private var _currentValue: Double = 0
+//    private var _currentValue: Double = 0
     @objc public dynamic var lastResult: CalculatorResult?
-    @objc public dynamic var currentValue: Double {
-        get {
-            return self._currentValue
-        }
-        set {
-            self._currentValue = newValue
-        }
-    }
+    @objc public dynamic var currentResult: CalculatorResult?
+//    @objc public dynamic var currentValue: Double {
+//        get {
+//            return self._currentValue
+//        }
+//        set {
+//            self._currentValue = newValue
+//        }
+//    }
     private var currentLockedOperation: CalculatorLockedOperation? = nil
     
     func add(lockedOperation: CalculatorLockedOperation) throws -> Bool {

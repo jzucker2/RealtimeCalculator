@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CalculatorResultHeaderView: UICollectionReusableView {
+class CalculatorResultHeaderViewOld: UICollectionReusableView {
     
     let displayLabel: UILabel
     
