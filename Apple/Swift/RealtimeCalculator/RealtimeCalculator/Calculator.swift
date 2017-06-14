@@ -32,6 +32,17 @@ class Calculator: NSObject {
     @objc private(set) dynamic var myRemoteResult: CalculatorResult?
     
     private(set) var currentLockedOperation: CalculatorLockedOperation? = nil
+//    private(set) var currentLockedOperation: CalculatorLockedOperation? = nil {
+//        didSet {
+//            if oldValue == nil && currentLockedOperation != nil {
+//                shouldShiftTotals = true
+//            } else {
+//                shouldShiftTotals = false
+//            }
+//        }
+//    }
+    
+//    private var shouldShiftTotals = false
     
     func add(lockedOperation: CalculatorLockedOperation) throws -> Bool {
         currentLockedOperation = lockedOperation
@@ -39,22 +50,64 @@ class Calculator: NSObject {
     }
     
     func add(value: CalculatorValue) throws -> Bool {
-        if currentLockedOperation != nil {
+//        if currentLockedOperation != nil {
+//            if currentTotal == 0 {
+//                currentTotal = inputValue
+//                inputValue = 0
+//            } else {
+//                print("ELSE!!!!!!")
+//                myRemoteResult = nil
+//            }
+//            print("has current locked operation and currentTotal == 0")
+//        } else {
+//            myRemoteResult = nil
+//            currentTotal = 0
+//            inputValue = 0
+//            print("has NO current locked operation and currentTotal is NOT 0")
+//        }
+//        inputValue = (inputValue * 10.0) + value.doubleValue
+//        return true
+        defer {
+            inputValue = (inputValue * 10.0) + value.doubleValue
+        }
+//        if let _ = myRemoteResult {
+//            myRemoteResult = nil
+//        }
+        if let _ = currentLockedOperation {
+            // we have a locked operation
+            print("************* has locked operation START")
+            if let _ = myRemoteResult {
+                print("************* has locked operation and has remote result")
+                myRemoteResult = nil
+                currentTotal = 0
+            } else {
+                print("************* has locked operation and has NO remote result")
+            }
             if currentTotal == 0 {
                 currentTotal = inputValue
                 inputValue = 0
-            } else {
-                print("ELSE!!!!!!")
-                myRemoteResult = nil
             }
-            print("has current locked operation and currentTotal == 0")
+            print("************* has locked operation FINISH")
+        } else if let _ = myRemoteResult {
+            print("************* NO locked operation and has sum total")
         } else {
-            myRemoteResult = nil
-            currentTotal = 0
-            inputValue = 0
-            print("has NO current locked operation and currentTotal is NOT 0")
+            print("************* NO locked operation and NO sum total")
         }
-        inputValue = (inputValue * 10.0) + value.doubleValue
+//        if let _ = myRemoteResult {
+//            myRemoteResult = nil
+//
+//        } else {
+//
+//        }
+//        if currentLockedOperation == nil {
+//            currentTotal = inputValue
+//            inputValue = 0
+//        } else if myRemoteResult != nil {
+//            myRemoteResult = nil
+//        } else {
+//            currentTotal = inputValue
+//        }
+        
         return true
     }
     
@@ -102,6 +155,7 @@ extension Calculator: PNObjectEventListener {
             myRemoteResult = result
             if let actualUpdatedResult = result.result {
                 currentTotal = actualUpdatedResult
+                currentLockedOperation = nil
             }
         } else {
             otherResult = result
