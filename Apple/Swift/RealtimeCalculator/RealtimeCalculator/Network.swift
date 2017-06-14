@@ -32,16 +32,14 @@ class Network: NSObject {
         client.subscribeToChannels([Constants.calculatorChannel], withPresence: true)
     }
     
-    func publish(firstValue: Double, operation: CalculatorLockedOperation, secondValue: Double) {
+    func publish(current total: Double, operation: CalculatorLockedOperation, input value: Double, with completion: PNPublishCompletionBlock? = nil) {
         let messageBody: [String: Any] = [
-            Constants.firstValue: NSNumber(value: firstValue),
+            Constants.currentTotal: NSNumber(value: total),
             Constants.operation: operation.rawValue,
-            Constants.secondValue: NSNumber(value: secondValue),
+            Constants.inputValue: NSNumber(value: value),
         ]
         client.publish(messageBody, toChannel: Constants.calculatorChannel) { (status) in
-            if (status.isError) {
-                print("Publish went wrong: \(status.debugDescription)")
-            }
+            completion?(status)
         }
     }
     

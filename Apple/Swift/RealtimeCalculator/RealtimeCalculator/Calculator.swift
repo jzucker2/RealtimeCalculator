@@ -21,31 +21,40 @@ class Calculator: NSObject {
         network.addListener(self)
     }
     
-    private var firstValue: Double = 0
-    private var _currentValue: Double = 0
-    @objc public dynamic var lastResult: CalculatorResult?
-    @objc public dynamic var currentValue: Double {
-        get {
-            return self._currentValue
-        }
-        set {
-            self._currentValue = newValue
-        }
+    @objc dynamic private(set) var currentTotal: Double = 0.0
+    @objc dynamic private(set) var inputValue: Double = 0.0
+    
+    var myLocalResult: CalculatorResult {
+        return CalculatorResult.localResult(publisher: network.uuid, currentTotal: currentTotal, inputValue: inputValue)
     }
-    private var currentLockedOperation: CalculatorLockedOperation? = nil
+    
+    @objc private(set) dynamic var otherResult: CalculatorResult?
+    @objc private(set) dynamic var myRemoteResult: CalculatorResult?
+    
+    private(set) var currentLockedOperation: CalculatorLockedOperation? = nil
     
     func add(lockedOperation: CalculatorLockedOperation) throws -> Bool {
-        print("add locked operation: \(lockedOperation.rawValue)")
         currentLockedOperation = lockedOperation
         return true
     }
     
     func add(value: CalculatorValue) throws -> Bool {
-        if currentLockedOperation != nil && firstValue == 0 {
-            firstValue = currentValue
-            currentValue = 0
+        if currentLockedOperation != nil {
+            if currentTotal == 0 {
+                currentTotal = inputValue
+                inputValue = 0
+            } else {
+                print("ELSE!!!!!!")
+                myRemoteResult = nil
+            }
+            print("has current locked operation and currentTotal == 0")
+        } else {
+            myRemoteResult = nil
+            currentTotal = 0
+            inputValue = 0
+            print("has NO current locked operation and currentTotal is NOT 0")
         }
-        currentValue = (currentValue * 10.0) + value.doubleValue
+        inputValue = (inputValue * 10.0) + value.doubleValue
         return true
     }
     
@@ -64,13 +73,16 @@ class Calculator: NSObject {
             print("Nothing to publish!")
             return
         }
-        network.publish(firstValue: firstValue, operation: actualLockedOperation, secondValue: currentValue)
-        firstValue = 0
+        network.publish(current: currentTotal, operation: actualLockedOperation, input: inputValue) { (status) in
+            self.inputValue = 0.0
+            self.currentLockedOperation = nil
+        }
     }
     
     func clear() {
-        firstValue = 0
-        currentValue = 0
+        myRemoteResult = nil
+        currentTotal = 0.0
+        inputValue = 0.0
         currentLockedOperation = nil
     }
     
@@ -81,22 +93,18 @@ class Calculator: NSObject {
 extension Calculator: PNObjectEventListener {
     
     func client(_ client: PubNub, didReceiveMessage message: PNMessageResult) {
-        guard let expectedMessageBody = message.data.message as? [String: Any] else {
-            print("Received unexpected message body type: \(message.debugDescription)")
+        guard let result = CalculatorResult(message: message) else {
+            print("Received invalid result")
             return
         }
-        guard let result = expectedMessageBody[Constants.result] as? Double else {
-            print("Did not find result")
-            return
-        }
-        if network.uuid == message.data.publisher {
-            currentValue = result
-        } else {
-            print("Published by someone else: \(message.data.publisher)")
-            guard let actualOtherResult = CalculatorResult(message: message) else {
-                return
+        // Handle own results
+        if network.uuid == result.publisher {
+            myRemoteResult = result
+            if let actualUpdatedResult = result.result {
+                currentTotal = actualUpdatedResult
             }
-            lastResult = actualOtherResult
+        } else {
+            otherResult = result
         }
     }
     
