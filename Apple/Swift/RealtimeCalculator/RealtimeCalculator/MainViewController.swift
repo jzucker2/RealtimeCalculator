@@ -77,8 +77,6 @@ class MainViewController: UIViewController {
         })
         self.observingOtherRemoteResultValueToken = calculator.observe(\.otherResult, changeHandler: { (calculator, change) in
             let lastFooterIndexPath = IndexPath(item: 0, section: 3)
-//            self.dataSourceAdapter.updateSupplementary(of: UICollectionElementKindSectionFooter, at: lastFooterIndexPath)
-//            self.dataSourceAdapter.updateLastResultFooterView(at: lastFooterIndexPath)
             guard let footerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: lastFooterIndexPath) as? CalculatorResultFooterView else {
                 fatalError()
             }

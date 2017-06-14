@@ -27,8 +27,6 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
         displayLabel.translatesAutoresizingMaskIntoConstraints = false
         displayLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1.0).isActive = true
         displayLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 1.0).isActive = true
-//        displayLabel.centerXAnchor.constraintEqualToSystemSpacingAfter(contentView.centerXAnchor, multiplier: 1.0).isActive = true
-//        displayLabel.centerYAnchor.constraintEqualToSystemSpacingBelow(contentView.centerYAnchor, multiplier: 1.0).isActive = true
         displayLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         displayLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         displayLabel.textAlignment = .center
