@@ -19,6 +19,7 @@ class MainViewController: UIViewController {
         settingUpStackView.alignment = .fill
         return settingUpStackView
     } ()
+    
     var collectionView: CalculatorCollectionView!
     
     let dataSource = CalculatorCollectionViewDataSource()
@@ -26,6 +27,7 @@ class MainViewController: UIViewController {
     var resultView: CalculatorResultHeaderView?
     
     var observingCurrentValueToken: NSKeyValueObservation?
+    var observingLastResultValueToken: NSKeyValueObservation?
     
     required init(calculator: Calculator) {
         self.calculator = calculator
@@ -43,9 +45,14 @@ class MainViewController: UIViewController {
         stackView.frame = view.frame
         let layout = CalculatorCollectionViewLayout()
         self.collectionView = CalculatorCollectionView(frame: view.bounds, collectionViewLayout: layout)
-        dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, with: { (headerView) -> (Double) in
+        let currentResultUpdate: CurrentResultUpdateBlock = { (headerView) in
             return self.calculator.currentValue
-        })
+        }
+        let lastResultUpdate: LastResultUpdateBlock = { (footerView) in
+            return self.calculator.lastResult
+        }
+//        dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, wi)
+        dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, with: currentResultUpdate, and: lastResultUpdate)
         collectionView.dataSource = dataSourceAdapter
         collectionView.delegate = self
         stackView.addArrangedSubview(collectionView)
@@ -53,6 +60,10 @@ class MainViewController: UIViewController {
         self.observingCurrentValueToken = calculator.observe(\.currentValue, changeHandler: { (calculator, change) in
             let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
             self.dataSourceAdapter.updateResultHeaderView(at: firstHeaderIndexPath)
+        })
+        self.observingLastResultValueToken = calculator.observe(\.lastResult, changeHandler: { (calculator, change) in
+            let lastFooterIndexPath = IndexPath(item: 0, section: 3)
+            self.dataSourceAdapter.updateLastResultFooterView(at: lastFooterIndexPath)
         })
         stackView.setNeedsLayout()
     }
@@ -78,6 +89,15 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         switch section {
         case 0:
+            return CGSize(width: view.bounds.width, height: 100.0)
+        default:
+            return CGSize.zero
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        switch section {
+        case 3:
             return CGSize(width: view.bounds.width, height: 100.0)
         default:
             return CGSize.zero

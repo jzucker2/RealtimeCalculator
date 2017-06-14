@@ -9,102 +9,11 @@
 import UIKit
 import PubNub
 
-public enum CalculatorLockedOperation: String {
-    case add
-    case subtract
-    case mutiply
-    case divide
-}
-
-public enum CalculatorSpecialOperation: String {
-    case clear
-    case equal
-}
-
-public enum CalculatorValue: String {
-    case zero
-    case one
-    case two
-    case three
-    case four
-    case five
-    case six
-    case seven
-    case eight
-    case nine
-    
-    static func value(from value: Int) -> CalculatorValue? {
-        guard value >= 0 && value < 10 else {
-            return nil
-        }
-        switch value {
-        case 0:
-            return .zero
-        case 1:
-            return .one
-        case 2:
-            return .two
-        case 3:
-            return .three
-        case 4:
-            return .four
-        case 5:
-            return .five
-        case 6:
-            return .six
-        case 7:
-            return .seven
-        case 8:
-            return .eight
-        case 9:
-            return .nine
-        default:
-            return nil
-        }
-    }
-    
-    var doubleValue: Double {
-        return Double(intValue)
-    }
-    
-    var intValue: Int {
-        switch self {
-        case .zero:
-            return 0
-        case .one:
-            return 1
-        case .two:
-            return 2
-        case .three:
-            return 3
-        case .four:
-            return 4
-        case .five:
-            return 5
-        case .six:
-            return 6
-        case .seven:
-            return 7
-        case .eight:
-            return 8
-        case .nine:
-            return 9
-        }
-    }
-    
-    var numberObject: NSNumber {
-        return NSNumber(value: intValue)
-    }
-}
-
-enum CalculatorError: Error {
-    case operationInput
-    case valueInput
-}
-
 class Calculator: NSObject {
     
     let network: Network
+    
+    let queue = DispatchQueue(label: "com.CalculatorQueue", qos: .userInitiated, attributes: [])
     
     required init(network: Network) {
         self.network = network
@@ -114,6 +23,7 @@ class Calculator: NSObject {
     
     private var firstValue: Double = 0
     private var _currentValue: Double = 0
+    @objc public dynamic var lastResult: CalculatorResult?
     @objc public dynamic var currentValue: Double {
         get {
             return self._currentValue
@@ -169,6 +79,7 @@ class Calculator: NSObject {
 }
 
 extension Calculator: PNObjectEventListener {
+    
     func client(_ client: PubNub, didReceiveMessage message: PNMessageResult) {
         guard let expectedMessageBody = message.data.message as? [String: Any] else {
             print("Received unexpected message body type: \(message.debugDescription)")
@@ -178,12 +89,17 @@ extension Calculator: PNObjectEventListener {
             print("Did not find result")
             return
         }
-        guard network.uuid == message.data.publisher else {
+        if network.uuid == message.data.publisher {
+            currentValue = result
+        } else {
             print("Published by someone else: \(message.data.publisher)")
-            return
+            guard let actualOtherResult = CalculatorResult(message: message) else {
+                return
+            }
+            lastResult = actualOtherResult
         }
-        currentValue = result
     }
+    
 }
 
 extension Calculator {

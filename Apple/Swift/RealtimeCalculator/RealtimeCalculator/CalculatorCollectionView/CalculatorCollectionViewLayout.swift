@@ -15,6 +15,7 @@ class CalculatorCollectionViewLayout: UICollectionViewFlowLayout {
         itemSize = CGSize(width: 30.0, height: 30.0)
         scrollDirection = .vertical
         headerReferenceSize = CGSize(width: 100.0, height: 50.0)
+        footerReferenceSize = CGSize(width: 100.0, height: 50.0)
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -15,6 +15,7 @@ class CalculatorCollectionView: UICollectionView {
         backgroundColor = .clear
         register(CalculatorCollectionViewCell.self, forCellWithReuseIdentifier: CalculatorCollectionViewCell.reuseIdentifier())
         register(CalculatorResultHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CalculatorResultHeaderView.reuseIdentifier())
+        register(CalculatorResultFooterView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: CalculatorResultFooterView.reuseIdentifier())
     }
     
     required init?(coder aDecoder: NSCoder) {
