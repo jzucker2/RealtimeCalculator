@@ -53,7 +53,7 @@ extension CalculatorLockedOperation: CalculatorDisplayButton {
             return "-"
         case .divide:
             return "/"
-        case .mutiply:
+        case .multiply:
             return "x"
         }
     }
@@ -78,7 +78,7 @@ extension CalculatorValue: CalculatorDisplayButton {
 
 struct CalculatorCollectionViewDataSource {
     
-    let sections = [[CalculatorValue.one, CalculatorValue.two, CalculatorValue.three, CalculatorLockedOperation.mutiply], [CalculatorValue.four, CalculatorValue.five, CalculatorValue.six, CalculatorLockedOperation.add], [CalculatorValue.seven, CalculatorValue.eight, CalculatorValue.nine, CalculatorLockedOperation.subtract], [CalculatorValue.zero, CalculatorSpecialOperation.clear, CalculatorSpecialOperation.equal, CalculatorLockedOperation.divide]]
+    let sections = [[CalculatorValue.one, CalculatorValue.two, CalculatorValue.three, CalculatorLockedOperation.multiply], [CalculatorValue.four, CalculatorValue.five, CalculatorValue.six, CalculatorLockedOperation.add], [CalculatorValue.seven, CalculatorValue.eight, CalculatorValue.nine, CalculatorLockedOperation.subtract], [CalculatorValue.zero, CalculatorSpecialOperation.clear, CalculatorSpecialOperation.equal, CalculatorLockedOperation.divide]]
     
     subscript(section: Int) -> [CalculatorDisplayButton] {
         guard let calculatorDisplayButtonSection = sections[section] as? [CalculatorDisplayButton] else {

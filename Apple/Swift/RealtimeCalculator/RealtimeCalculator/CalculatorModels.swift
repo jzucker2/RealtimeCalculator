@@ -72,7 +72,7 @@ extension CalculatorResult {
 public enum CalculatorLockedOperation: String {
     case add
     case subtract
-    case mutiply
+    case multiply
     case divide
 }
 
