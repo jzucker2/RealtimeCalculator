@@ -95,7 +95,7 @@ struct CalculatorCollectionViewDataSource {
     
 }
 
-typealias ResultUpdateBlock = (CalculatorResultHeaderFooterView) -> (CalculatorResult?)
+typealias ResultUpdateBlock = (CalculatorResultHeaderFooterView) -> (CalculatorHeaderFooterUpdate?)
 
 class CalculatorCollectionViewDataSourceAdapter: NSObject {
     let dataSource: CalculatorCollectionViewDataSource
@@ -111,7 +111,8 @@ class CalculatorCollectionViewDataSourceAdapter: NSObject {
     
     func update(supplementary view: CalculatorResultHeaderFooterView) {
         let updatedResult = resultUpdate(view)
-        view.update(with: updatedResult)
+//        view.update(with: updatedResult)
+        view.update(using: updatedResult)
     }
     
 }

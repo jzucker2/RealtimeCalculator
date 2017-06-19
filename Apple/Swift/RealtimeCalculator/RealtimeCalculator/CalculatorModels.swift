@@ -44,6 +44,24 @@ class CalculatorResult: NSObject {
 
 extension CalculatorResult {
     
+    enum HeaderFooterUpdate {
+        case header
+        case footer
+    }
+    
+    func headerFooterUpdate(of type: HeaderFooterUpdate) -> CalculatorHeaderFooterUpdate {
+        switch type {
+        case .header:
+            return CalculatorHeaderFooterUpdate(publisher: publisher, time: time, result: result, inputValue: inputValue, currentTotal: nil)
+        case .footer:
+            return CalculatorHeaderFooterUpdate(publisher: publisher, time: time, result: result, inputValue: inputValue, currentTotal: currentTotal)
+        }
+    }
+    
+}
+
+extension CalculatorResult {
+    
     convenience init?(message: PNMessageResult) {
         guard let resultDict = message.data.message as? [String: Any] else {
             return nil

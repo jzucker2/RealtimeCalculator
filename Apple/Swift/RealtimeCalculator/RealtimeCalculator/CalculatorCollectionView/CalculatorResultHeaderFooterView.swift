@@ -8,6 +8,14 @@
 
 import UIKit
 
+struct CalculatorHeaderFooterUpdate {
+    let publisher: String?
+    let time: Date?
+    let result: Double?
+    let inputValue: Double?
+    let currentTotal: Double?
+}
+
 class CalculatorResultHeaderFooterView: UICollectionReusableView {
     
     let resultLabel = UILabel(frame: .zero)
@@ -35,43 +43,86 @@ class CalculatorResultHeaderFooterView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(with result: CalculatorResult?) {
-        defer {
-            stackView.setNeedsLayout()
-        }
-        guard let actualResult = result else {
-            resultLabel.text = "No result"
-            return
-        }
-        if let actualResult = actualResult.result {
-            resultLabel.text = "\(actualResult)"
-        }
-        timeLabel.text = "\(actualResult.time)"
+    func update(using update: CalculatorHeaderFooterUpdate?) {
+    
     }
+    
+//    func update(with result: CalculatorResult?) {
+//        defer {
+//            stackView.setNeedsLayout()
+//        }
+//        guard let actualResult = result else {
+//            resultLabel.text = "No result"
+//            return
+//        }
+//        if let actualResult = actualResult.result {
+//            resultLabel.text = "\(actualResult)"
+//        }
+//        timeLabel.text = "\(actualResult.time)"
+//    }
 }
 
 final class CalculatorResultFooterView: CalculatorResultHeaderFooterView {
+    
+    override func update(using update: CalculatorHeaderFooterUpdate?) {
+        defer {
+            stackView.setNeedsLayout()
+        }
+        guard let actualUpdate = update else {
+            resultLabel.text = "No result"
+            return
+        }
+        if let actualResult = actualUpdate.result {
+            resultLabel.text = "\(actualResult)"
+        }
+//        if let actualResult = actualUpdate.result {
+//            resultLabel.text = "\(actualResult)"
+//        } else if let actualInputValue = actualUpdate.inputValue {
+//            resultLabel.text = "\(actualInputValue)"
+//        } else if let actualCurrentTotal = actualUpdate.currentTotal {
+//            resultLabel.text = "\(actualCurrentTotal)"
+//        }
+        timeLabel.text = "\(actualUpdate.time)"
+    }
     
 }
 
 final class CalculatorResultHeaderView: CalculatorResultHeaderFooterView {
     
-    override func update(with result: CalculatorResult?) {
+    override func update(using update: CalculatorHeaderFooterUpdate?) {
         defer {
             stackView.setNeedsLayout()
         }
-        guard let actualResult = result else {
+        guard let actualUpdate = update else {
             resultLabel.text = "No result"
             return
         }
-        if let actualResult = actualResult.result {
+        if let actualResult = actualUpdate.result {
             resultLabel.text = "\(actualResult)"
-        } else if let actualInputValue = actualResult.inputValue {
+        } else if let actualInputValue = actualUpdate.inputValue {
             resultLabel.text = "\(actualInputValue)"
-        } else if let actualCurrentTotal = actualResult.currentTotal {
+        } else if let actualCurrentTotal = actualUpdate.currentTotal {
             resultLabel.text = "\(actualCurrentTotal)"
         }
-        timeLabel.text = "\(actualResult.time)"
+        timeLabel.text = "\(actualUpdate.time)"
     }
+    
+//    override func update(with result: CalculatorResult?) {
+//        defer {
+//            stackView.setNeedsLayout()
+//        }
+//        guard let actualResult = result else {
+//            resultLabel.text = "No result"
+//            return
+//        }
+//        if let actualResult = actualResult.result {
+//            resultLabel.text = "\(actualResult)"
+//        } else if let actualInputValue = actualResult.inputValue {
+//            resultLabel.text = "\(actualInputValue)"
+//        } else if let actualCurrentTotal = actualResult.currentTotal {
+//            resultLabel.text = "\(actualCurrentTotal)"
+//        }
+//        timeLabel.text = "\(actualResult.time)"
+//    }
     
 }

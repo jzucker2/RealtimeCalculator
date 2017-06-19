@@ -28,6 +28,7 @@ class MainViewController: UIViewController {
     var observingMyRemoteResultToken: NSKeyValueObservation?
     var observingOtherRemoteResultValueToken: NSKeyValueObservation?
     var observingInputValueToken: NSKeyValueObservation?
+    var observingDisplayValueToken: NSKeyValueObservation?
     
     required init(calculator: Calculator) {
         self.calculator = calculator
@@ -48,33 +49,26 @@ class MainViewController: UIViewController {
         let currentResultUpdate: ResultUpdateBlock = { (headerFooterView) in
             switch headerFooterView {
             case _ as CalculatorResultHeaderView:
-                return self.calculator.myRemoteResult ?? self.calculator.myLocalResult
+                return self.calculator.localHeaderUpdate
             case _ as CalculatorResultFooterView:
-                return self.calculator.otherResult
+                return self.calculator.otherResult?.headerFooterUpdate(of: .footer)
             default:
                 fatalError()
             }
-            return self.calculator.myRemoteResult
         }
         dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, with: currentResultUpdate)
         collectionView.dataSource = dataSourceAdapter
         collectionView.delegate = self
         stackView.addArrangedSubview(collectionView)
         collectionView.reloadData()
-        self.observingMyRemoteResultToken = calculator.observe(\.myRemoteResult, changeHandler: { (calculator, change) in
+        self.observingDisplayValueToken = calculator.observe(\.displayValue, changeHandler: { (calculator, change) in
             let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
             guard let headerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: firstHeaderIndexPath) as? CalculatorResultHeaderView else {
                 fatalError()
             }
             self.dataSourceAdapter.update(supplementary: headerView)
         })
-        self.observingInputValueToken = calculator.observe(\.inputValue, changeHandler: { (calculator, change) in
-            let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
-            guard let headerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: firstHeaderIndexPath) as? CalculatorResultHeaderView else {
-                fatalError()
-            }
-            self.dataSourceAdapter.update(supplementary: headerView)
-        })
+
         self.observingOtherRemoteResultValueToken = calculator.observe(\.otherResult, changeHandler: { (calculator, change) in
             let lastFooterIndexPath = IndexPath(item: 0, section: 3)
             guard let footerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: lastFooterIndexPath) as? CalculatorResultFooterView else {
