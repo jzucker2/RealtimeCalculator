@@ -18,6 +18,7 @@ struct CalculatorHeaderFooterUpdate {
 
 class CalculatorResultHeaderFooterView: UICollectionReusableView {
     
+    let publisherLabel = UILabel(frame: .zero)
     let resultLabel = UILabel(frame: .zero)
     let stackView = UIStackView(frame: .zero)
     let timeLabel = UILabel(frame: .zero)
@@ -26,7 +27,8 @@ class CalculatorResultHeaderFooterView: UICollectionReusableView {
         super.init(frame: frame)
         stackView.axis = .horizontal
         stackView.alignment = .fill
-        stackView.distribution = .fill
+//        stackView.distribution = .fill
+        stackView.distribution = .fillProportionally
         addSubview(stackView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1.0).isActive = true
@@ -36,6 +38,7 @@ class CalculatorResultHeaderFooterView: UICollectionReusableView {
         resultLabel.textAlignment = .center
         timeLabel.textAlignment = .center
         stackView.addArrangedSubview(timeLabel)
+        stackView.addArrangedSubview(publisherLabel)
         stackView.addArrangedSubview(resultLabel)
     }
     
@@ -44,30 +47,29 @@ class CalculatorResultHeaderFooterView: UICollectionReusableView {
     }
     
     func update(using update: CalculatorHeaderFooterUpdate?) {
-    
+        if let actualTimestamp = update?.time {
+            timeLabel.isHidden = false
+            timeLabel.text = DateDisplay.resultHeaderFooterFormatter.string(from: actualTimestamp)
+        } else {
+            timeLabel.isHidden = true
+            timeLabel.text = ""
+        }
+        if let actualPublisher = update?.publisher {
+            publisherLabel.isHidden = false
+            publisherLabel.text = String(actualPublisher.prefix(8))
+        } else {
+            publisherLabel.text = ""
+            publisherLabel.isHidden = true
+        }
+        stackView.setNeedsLayout()
     }
     
-//    func update(with result: CalculatorResult?) {
-//        defer {
-//            stackView.setNeedsLayout()
-//        }
-//        guard let actualResult = result else {
-//            resultLabel.text = "No result"
-//            return
-//        }
-//        if let actualResult = actualResult.result {
-//            resultLabel.text = "\(actualResult)"
-//        }
-//        timeLabel.text = "\(actualResult.time)"
-//    }
 }
 
 final class CalculatorResultFooterView: CalculatorResultHeaderFooterView {
     
     override func update(using update: CalculatorHeaderFooterUpdate?) {
-        defer {
-            stackView.setNeedsLayout()
-        }
+        super.update(using: update)
         guard let actualUpdate = update else {
             resultLabel.text = "No result"
             return
@@ -75,14 +77,7 @@ final class CalculatorResultFooterView: CalculatorResultHeaderFooterView {
         if let actualResult = actualUpdate.result {
             resultLabel.text = "\(actualResult)"
         }
-//        if let actualResult = actualUpdate.result {
-//            resultLabel.text = "\(actualResult)"
-//        } else if let actualInputValue = actualUpdate.inputValue {
-//            resultLabel.text = "\(actualInputValue)"
-//        } else if let actualCurrentTotal = actualUpdate.currentTotal {
-//            resultLabel.text = "\(actualCurrentTotal)"
-//        }
-        timeLabel.text = "\(actualUpdate.time)"
+        stackView.setNeedsLayout()
     }
     
 }
@@ -90,9 +85,7 @@ final class CalculatorResultFooterView: CalculatorResultHeaderFooterView {
 final class CalculatorResultHeaderView: CalculatorResultHeaderFooterView {
     
     override func update(using update: CalculatorHeaderFooterUpdate?) {
-        defer {
-            stackView.setNeedsLayout()
-        }
+        super.update(using: update)
         guard let actualUpdate = update else {
             resultLabel.text = "No result"
             return
@@ -104,25 +97,7 @@ final class CalculatorResultHeaderView: CalculatorResultHeaderFooterView {
         } else if let actualCurrentTotal = actualUpdate.currentTotal {
             resultLabel.text = "\(actualCurrentTotal)"
         }
-        timeLabel.text = "\(actualUpdate.time)"
+        stackView.setNeedsLayout()
     }
-    
-//    override func update(with result: CalculatorResult?) {
-//        defer {
-//            stackView.setNeedsLayout()
-//        }
-//        guard let actualResult = result else {
-//            resultLabel.text = "No result"
-//            return
-//        }
-//        if let actualResult = actualResult.result {
-//            resultLabel.text = "\(actualResult)"
-//        } else if let actualInputValue = actualResult.inputValue {
-//            resultLabel.text = "\(actualInputValue)"
-//        } else if let actualCurrentTotal = actualResult.currentTotal {
-//            resultLabel.text = "\(actualCurrentTotal)"
-//        }
-//        timeLabel.text = "\(actualResult.time)"
-//    }
     
 }

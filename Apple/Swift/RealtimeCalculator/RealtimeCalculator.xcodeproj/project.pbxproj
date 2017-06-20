@@ -23,6 +23,7 @@
 		516AF8551EBA85A800202439 /* RealtimeCalculatorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516AF8541EBA85A800202439 /* RealtimeCalculatorUITests.swift */; };
 		518BAB5D1EF1EE9D0003D785 /* CalculatorResultHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518BAB5C1EF1EE4D0003D785 /* CalculatorResultHeaderFooterView.swift */; };
 		51C43F781EF0595A00A2B22E /* Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C43F761EF0581A00A2B22E /* Calculator.swift */; };
+		51EC24441EF97DD600466AFA /* DateDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EC24431EF97DD600466AFA /* DateDisplay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		516AF8561EBA85A800202439 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		518BAB5C1EF1EE4D0003D785 /* CalculatorResultHeaderFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorResultHeaderFooterView.swift; sourceTree = "<group>"; };
 		51C43F761EF0581A00A2B22E /* Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calculator.swift; sourceTree = "<group>"; };
+		51EC24431EF97DD600466AFA /* DateDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDisplay.swift; sourceTree = "<group>"; };
 		5C406323C984B2F951DD35ED /* Pods_RealtimeCalculator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RealtimeCalculator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1AB116321D635D0E71779BA /* Pods-RealtimeCalculator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RealtimeCalculator.debug.xcconfig"; path = "../../../Pods/Target Support Files/Pods-RealtimeCalculator/Pods-RealtimeCalculator.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -135,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				514558101EBA87FC007E501F /* Network.swift */,
+				51EC24431EF97DD600466AFA /* DateDisplay.swift */,
 				5168D4A11EF0AC35004A1831 /* Calculator */,
 			);
 			name = Services;
@@ -419,6 +422,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51EC24441EF97DD600466AFA /* DateDisplay.swift in Sources */,
 				51222BE91EF057F4004BBA46 /* CalculatorCollectionViewDataSource.swift in Sources */,
 				514558151EBA97DA007E501F /* Constants.swift in Sources */,
 				516AF8371EBA85A800202439 /* MainViewController.swift in Sources */,
