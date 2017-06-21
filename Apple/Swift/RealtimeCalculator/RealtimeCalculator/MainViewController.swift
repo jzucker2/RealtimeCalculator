@@ -84,31 +84,16 @@ class MainViewController: UIViewController {
 extension MainViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("\(#function)")
         guard let cell = collectionView.cellForItem(at: indexPath) else {
             fatalError()
         }
-        let originalTransform = cell.transform
-        UIView.animate(withDuration: 0.01, delay: 0.0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.0, options: [.allowUserInteraction, .layoutSubviews, .allowAnimatedContent, .curveEaseInOut], animations: {
-            cell.transform = originalTransform.scaledBy(x: 0.5, y: 0.5)
-            cell.layoutIfNeeded()
-        }) { (finished) in
-            UIView.animate(withDuration: 0.02, delay: 0.0, usingSpringWithDamping: 0.1, initialSpringVelocity: 0.0, options: [.allowUserInteraction, .layoutSubviews, .allowAnimatedContent, .curveEaseInOut], animations: {
-                cell.transform = originalTransform.scaledBy(x: 1.1, y: 1.1)
-                cell.layoutIfNeeded()
-            }, completion: { (finished) in
-                UIView.animate(withDuration: 0.01, delay: 0.0, usingSpringWithDamping: 0.1, initialSpringVelocity: 0.0, options: [.allowUserInteraction, .layoutSubviews, .allowAnimatedContent, .curveEaseInOut], animations: {
-                    cell.transform = originalTransform
-                    cell.layoutIfNeeded()
-                }, completion: { (finished) in
-                    do {
-                        let buttonPressed = self.dataSource[indexPath]
-                        let _ = try self.calculator.performOperation(for: buttonPressed)
-                    } catch {
-                        print("CalculatorError: \(error.localizedDescription)")
-                    }
-                })
-            })
+        cell.animateButtonPress { (finished) -> (Void) in
+            do {
+                let buttonPressed = self.dataSource[indexPath]
+                let _ = try self.calculator.performOperation(for: buttonPressed)
+            } catch {
+                print("CalculatorError: \(error.localizedDescription)")
+            }
         }
     }
     

@@ -8,14 +8,6 @@
 
 import UIKit
 
-extension UIView {
-    
-    static func reuseIdentifier() -> String {
-        return NSStringFromClass(self)
-    }
-    
-}
-
 class CalculatorCollectionViewCell: UICollectionViewCell {
     
     let displayLabel: UILabel
@@ -24,7 +16,7 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
         self.displayLabel = UILabel(frame: .zero)
         super.init(frame: frame)
         contentView.addSubview(displayLabel)
-        displayLabel.translatesAutoresizingMaskIntoConstraints = false
+        displayLabel.forceAutolayout()
         displayLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1.0).isActive = true
         displayLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 1.0).isActive = true
         displayLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
