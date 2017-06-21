@@ -60,6 +60,10 @@ extension CalculatorLockedOperation: CalculatorDisplayButton {
         }
     }
     
+    var textColor: UIColor {
+        return .white
+    }
+    
     var backgroundColor: UIColor {
         return UIColor.orange
     }

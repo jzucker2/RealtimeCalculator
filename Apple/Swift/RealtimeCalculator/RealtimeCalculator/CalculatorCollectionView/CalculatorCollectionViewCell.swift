@@ -38,6 +38,7 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
     
     func update(with calculatorButton: CalculatorDisplayButton) {
         displayLabel.text = calculatorButton.displaySymbol
+        displayLabel.textColor = calculatorButton.textColor
         contentView.backgroundColor = calculatorButton.backgroundColor
         contentView.setNeedsLayout()
     }
