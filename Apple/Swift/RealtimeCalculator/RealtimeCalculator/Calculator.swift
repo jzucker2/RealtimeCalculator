@@ -36,7 +36,18 @@ class Calculator: NSObject {
     @objc private(set) dynamic var otherResult: CalculatorResult?
     @objc private(set) dynamic var myRemoteResult: CalculatorResult?
     
-    private(set) var currentLockedOperation: CalculatorLockedOperation? = nil
+    private(set) var currentLockedOperation: CalculatorLockedOperation? {
+        get {
+            guard let actualLockedOperationRawValue = currentLockedOperationRawValue else {
+                return nil
+            }
+            return CalculatorLockedOperation(rawValue: actualLockedOperationRawValue)
+        }
+        set {
+            self.currentLockedOperationRawValue = newValue?.rawValue
+        }
+    }
+    @objc private(set) dynamic var currentLockedOperationRawValue: String? = nil
     
     func add(lockedOperation: CalculatorLockedOperation) throws -> Bool {
         currentLockedOperation = lockedOperation
@@ -112,10 +123,10 @@ extension Calculator: PNObjectEventListener {
         // Handle own results
         if network.uuid == result.publisher {
             myRemoteResult = result
+            currentLockedOperation = nil
             if let actualUpdatedResult = result.result {
                 currentTotal = actualUpdatedResult
                 displayValue = currentTotal
-                currentLockedOperation = nil
             }
         } else {
             otherResult = result

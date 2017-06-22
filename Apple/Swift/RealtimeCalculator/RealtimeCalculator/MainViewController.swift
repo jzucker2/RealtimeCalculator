@@ -29,6 +29,7 @@ class MainViewController: UIViewController {
     var observingOtherRemoteResultValueToken: NSKeyValueObservation?
     var observingInputValueToken: NSKeyValueObservation?
     var observingDisplayValueToken: NSKeyValueObservation?
+    var observingLockedOperationValueToken: NSKeyValueObservation?
     
     required init(calculator: Calculator) {
         self.calculator = calculator
@@ -59,6 +60,7 @@ class MainViewController: UIViewController {
         dataSourceAdapter = CalculatorCollectionViewDataSourceAdapter(collectionView: collectionView, dataSource: dataSource, with: currentResultUpdate)
         collectionView.dataSource = dataSourceAdapter
         collectionView.delegate = self
+        collectionView.allowsSelection = true
         stackView.addArrangedSubview(collectionView)
         collectionView.reloadData()
         self.observingDisplayValueToken = calculator.observe(\.displayValue, changeHandler: { (calculator, change) in
@@ -68,7 +70,25 @@ class MainViewController: UIViewController {
             }
             self.dataSourceAdapter.update(supplementary: headerView)
         })
-
+        self.observingLockedOperationValueToken = calculator.observe(\.currentLockedOperationRawValue, changeHandler: { (calculator, change) in
+            guard calculator.currentLockedOperation == nil else {
+                return
+            }
+            DispatchQueue.main.async {
+                guard let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems else {
+                    return
+                }
+                selectedIndexPaths.forEach({ (indexPath) in
+                    print("deselect at \(indexPath)")
+                    self.collectionView.deselectItem(at: indexPath, animated: true)
+                    guard let calculatorCell = self.collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
+                        fatalError()
+                    }
+                    calculatorCell.isOutlined = false
+                })
+            }
+        })
+        
         self.observingOtherRemoteResultValueToken = calculator.observe(\.otherResult, changeHandler: { (calculator, change) in
             let lastFooterIndexPath = IndexPath(item: 0, section: 3)
             guard let footerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: lastFooterIndexPath) as? CalculatorResultFooterView else {
@@ -83,18 +103,59 @@ class MainViewController: UIViewController {
 
 extension MainViewController: UICollectionViewDelegate {
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         guard let cell = collectionView.cellForItem(at: indexPath) else {
             fatalError()
         }
-        cell.animateButtonPress { (finished) -> (Void) in
+        let buttonPressed = self.dataSource[indexPath]
+        let buttonOperationBlock: (Bool?) -> (Void) = { finished in
             do {
-                let buttonPressed = self.dataSource[indexPath]
                 let _ = try self.calculator.performOperation(for: buttonPressed)
             } catch {
                 print("CalculatorError: \(error.localizedDescription)")
             }
         }
+        var shouldRunOperationAfterAnimations = true
+        if let specialOperation = buttonPressed as? CalculatorSpecialOperation, specialOperation == CalculatorSpecialOperation.equal {
+            shouldRunOperationAfterAnimations = false
+            buttonOperationBlock(nil)
+        }
+        
+        cell.animateButtonPress { (finished) -> (Void) in
+            if shouldRunOperationAfterAnimations {
+                buttonOperationBlock(finished)
+            }
+        }
+        switch buttonPressed {
+        case _ as CalculatorLockedOperation:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let calculatorCell = collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
+            fatalError()
+        }
+        calculatorCell.isOutlined = true
+    }
+    
+//    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+//        let buttonPressed = self.dataSource[indexPath]
+//        switch buttonPressed {
+//        case _ as CalculatorLockedOperation:
+//            return true
+//        default:
+//            return false
+//        }
+//    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        guard let calculatorCell = collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
+            fatalError()
+        }
+        calculatorCell.isOutlined = false
     }
     
 }

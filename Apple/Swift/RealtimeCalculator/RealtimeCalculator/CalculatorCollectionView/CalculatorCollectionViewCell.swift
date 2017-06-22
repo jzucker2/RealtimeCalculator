@@ -35,4 +35,17 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
         contentView.setNeedsLayout()
     }
     
+    var isOutlined: Bool = false {
+        didSet {
+            switch isOutlined {
+            case true:
+                contentView.layer.borderWidth = 3.0
+                contentView.layer.borderColor = UIColor.red.cgColor
+            case false:
+                contentView.layer.borderWidth = 0.0
+                contentView.layer.borderColor = UIColor.black.cgColor
+            }
+        }
+    }
+    
 }
