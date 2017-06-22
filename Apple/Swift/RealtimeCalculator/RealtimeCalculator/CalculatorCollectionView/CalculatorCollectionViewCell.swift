@@ -17,6 +17,13 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(displayLabel)
+        contentView.addSubview(ghostView)
+        ghostView.isHidden = true
+        ghostView.sizeAndCenter(with: contentView)
+        ghostView.clipsToBounds = true
+        ghostView.layer.cornerRadius = frame.size.width/2.0
+        ghostView.layer.borderWidth = 5.0
+        ghostView.layer.borderColor = UIColor.white.cgColor
         displayLabel.sizeAndCenter(with: contentView)
         displayLabel.textAlignment = .center
     }
