@@ -84,7 +84,7 @@ class MainViewController: UIViewController {
                     guard let calculatorCell = self.collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
                         fatalError()
                     }
-                    calculatorCell.isOutlined = false
+                    calculatorCell.isSelectedInterface = false
                 })
             }
         })
@@ -138,7 +138,7 @@ extension MainViewController: UICollectionViewDelegate {
         guard let calculatorCell = collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
             fatalError()
         }
-        calculatorCell.isOutlined = true
+        calculatorCell.isSelectedInterface = true
     }
     
 //    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
@@ -155,7 +155,7 @@ extension MainViewController: UICollectionViewDelegate {
         guard let calculatorCell = collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
             fatalError()
         }
-        calculatorCell.isOutlined = false
+        calculatorCell.isSelectedInterface = false
     }
     
 }

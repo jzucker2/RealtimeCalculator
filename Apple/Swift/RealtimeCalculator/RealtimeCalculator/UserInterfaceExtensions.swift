@@ -22,6 +22,24 @@ extension UIView {
         translatesAutoresizingMaskIntoConstraints = false
     }
     
+    func center(in view: UIView) {
+        forceAutolayout()
+        centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    }
+    
+    func size(to view: UIView) {
+        forceAutolayout()
+        widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1.0).isActive = true
+        heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1.0).isActive = true
+    }
+    
+    func sizeAndCenter(with view: UIView) {
+        forceAutolayout()
+        size(to: view)
+        center(in: view)
+    }
+    
 }
 
 extension UIView {

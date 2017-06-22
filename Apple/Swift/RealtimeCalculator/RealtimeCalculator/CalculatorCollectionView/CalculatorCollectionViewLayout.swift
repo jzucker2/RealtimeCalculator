@@ -17,6 +17,8 @@ class CalculatorCollectionViewLayout: UICollectionViewFlowLayout {
         scrollDirection = .vertical
         minimumLineSpacing = 10.0
         minimumInteritemSpacing = 10.0
+//        estimatedItemSize = CGSize(width: 100.0, height: 100.0)
+        itemSize = CGSize(width: 75.0, height: 75.0)
         sectionInset = UIEdgeInsets(top: 5.0, left: 0.0, bottom: 5.0, right: 0.0)
         headerReferenceSize = CGSize(width: 100.0, height: 50.0)
         footerReferenceSize = CGSize(width: 100.0, height: 50.0)

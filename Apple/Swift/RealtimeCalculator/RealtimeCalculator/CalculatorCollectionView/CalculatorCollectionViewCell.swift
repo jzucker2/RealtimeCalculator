@@ -10,17 +10,14 @@ import UIKit
 
 class CalculatorCollectionViewCell: UICollectionViewCell {
     
-    let displayLabel: UILabel
+    let displayLabel = UILabel(frame: .zero)
+    let ghostView = UIView(frame: .zero)
+    
     
     override init(frame: CGRect) {
-        self.displayLabel = UILabel(frame: .zero)
         super.init(frame: frame)
         contentView.addSubview(displayLabel)
-        displayLabel.forceAutolayout()
-        displayLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1.0).isActive = true
-        displayLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 1.0).isActive = true
-        displayLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        displayLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+        displayLabel.sizeAndCenter(with: contentView)
         displayLabel.textAlignment = .center
     }
     
@@ -30,14 +27,18 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
     
     func update(with calculatorButton: CalculatorDisplayButton) {
         displayLabel.text = calculatorButton.displaySymbol
+        displayLabel.font = UIFont.boldSystemFont(ofSize: 42.0)
         displayLabel.textColor = calculatorButton.textColor
         contentView.backgroundColor = calculatorButton.backgroundColor
         contentView.setNeedsLayout()
     }
     
-    var isOutlined: Bool = false {
+    var isSelectedInterface: Bool = false {
         didSet {
-            switch isOutlined {
+            defer {
+                contentView.setNeedsLayout()
+            }
+            switch isSelectedInterface {
             case true:
                 contentView.layer.borderWidth = 3.0
                 contentView.layer.borderColor = UIColor.red.cgColor
@@ -45,6 +46,13 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
                 contentView.layer.borderWidth = 0.0
                 contentView.layer.borderColor = UIColor.black.cgColor
             }
+        }
+    }
+    
+    var isGhostSelectedInterface: Bool = false {
+        didSet {
+            ghostView.isHidden = !isGhostSelectedInterface
+            contentView.setNeedsLayout()
         }
     }
     

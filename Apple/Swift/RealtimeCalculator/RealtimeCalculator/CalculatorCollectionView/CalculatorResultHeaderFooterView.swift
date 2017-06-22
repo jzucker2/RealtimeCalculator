@@ -30,11 +30,7 @@ class CalculatorResultHeaderFooterView: UICollectionReusableView {
 //        stackView.distribution = .fill
         stackView.distribution = .fillProportionally
         addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 1.0).isActive = true
-        stackView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 1.0).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        stackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        stackView.sizeAndCenter(with: self)
         resultLabel.textAlignment = .center
         timeLabel.textAlignment = .center
         stackView.addArrangedSubview(timeLabel)
