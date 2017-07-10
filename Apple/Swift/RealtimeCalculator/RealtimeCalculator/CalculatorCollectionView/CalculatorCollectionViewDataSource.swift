@@ -82,6 +82,12 @@ extension CalculatorValue: CalculatorDisplayButton {
     
 }
 
+extension Double {
+    var arrayOfDigits: [Double] {
+        return description.characters.flatMap { Double(String($0)) }
+    }
+}
+
 struct CalculatorCollectionViewDataSource {
     
     let sections = [[CalculatorValue.one, CalculatorValue.two, CalculatorValue.three, CalculatorLockedOperation.multiply], [CalculatorValue.four, CalculatorValue.five, CalculatorValue.six, CalculatorLockedOperation.add], [CalculatorValue.seven, CalculatorValue.eight, CalculatorValue.nine, CalculatorLockedOperation.subtract], [CalculatorValue.zero, CalculatorSpecialOperation.clear, CalculatorSpecialOperation.equal, CalculatorLockedOperation.divide]]
@@ -97,6 +103,50 @@ struct CalculatorCollectionViewDataSource {
         return self[indexPath.section][indexPath.item]
     }
     
+    subscript(button: CalculatorDisplayButton) -> IndexPath {
+        for (sectionIndex, section) in sections.enumerated() {
+            for (itemIndex, item) in section.enumerated() {
+                guard let currentButton = item as? CalculatorDisplayButton else {
+                    fatalError()
+                }
+                if currentButton.displaySymbol == button.displaySymbol {
+                    return IndexPath(item: itemIndex, section: sectionIndex)
+                } else {
+                    continue
+                }
+            }
+        }
+        fatalError()
+    }
+    
+    func get(with digit: Int) -> IndexPath {
+        guard digit >= 0 && digit <= 9 else {
+            fatalError()
+        }
+        let digitString = "\(digit)"
+        for (sectionIndex, section) in sections.enumerated() {
+            for (itemIndex, item) in section.enumerated() {
+                guard let currentButton = item as? CalculatorDisplayButton else {
+                    fatalError()
+                }
+                if currentButton.displaySymbol == digitString {
+                    return IndexPath(item: itemIndex, section: sectionIndex)
+                } else {
+                    continue
+                }
+            }
+        }
+        fatalError()
+    }
+    
+    subscript (value: Double) -> [IndexPath] {
+        return value.arrayOfDigits.map({ (digit) -> IndexPath in
+            guard let intDigit = Int(exactly: digit) else {
+                fatalError()
+            }
+            return get(with: intDigit)
+        })
+    }
 }
 
 typealias ResultUpdateBlock = (CalculatorResultHeaderFooterView) -> (CalculatorHeaderFooterUpdate?)

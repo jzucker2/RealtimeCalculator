@@ -94,6 +94,16 @@ class MainViewController: UIViewController {
             guard let footerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: lastFooterIndexPath) as? CalculatorResultFooterView else {
                 fatalError()
             }
+            if let inputValue = calculator.otherResult?.inputValue {
+                let updatedIndexPaths = self.dataSource[inputValue]
+                for indexPath in updatedIndexPaths {
+                    guard let calculatorCell = self.collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
+                        fatalError()
+                    }
+                    // TODO: Clean this up and add true selection
+                    calculatorCell.isGhostSelectedInterface = true
+                }
+            }
             self.dataSourceAdapter.update(supplementary: footerView)
         })
         stackView.setNeedsLayout()
