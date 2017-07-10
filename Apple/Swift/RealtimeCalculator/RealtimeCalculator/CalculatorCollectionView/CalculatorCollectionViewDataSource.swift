@@ -9,9 +9,18 @@
 import UIKit
 
 protocol CalculatorDisplayButton {
+    associatedtype Button: Equatable
     var displaySymbol: String { get }
     var textColor: UIColor { get }
     var backgroundColor: UIColor { get }
+}
+
+extension CalculatorDisplayButton: Equatable {
+    
+    static func == (lhs: CalculatorDisplayButton, rhs: CalculatorDisplayButton) -> Bool {
+        return lhs.displaySymbol == rhs.displaySymbol
+    }
+    
 }
 
 extension CalculatorDisplayButton {
@@ -97,6 +106,13 @@ struct CalculatorCollectionViewDataSource {
         return self[indexPath.section][indexPath.item]
     }
     
+//    subscript(calculatorButton: CalculatorDisplayButton) -> IndexPath? {
+//        let flatMap: [CalculatorDisplayButton] = sections.flatMap()
+//        return flatMap.first(where: { (currentButton) -> Bool in
+//
+//        })
+//    }
+    
 }
 
 typealias ResultUpdateBlock = (CalculatorResultHeaderFooterView) -> (CalculatorHeaderFooterUpdate?)
@@ -115,7 +131,6 @@ class CalculatorCollectionViewDataSourceAdapter: NSObject {
     
     func update(supplementary view: CalculatorResultHeaderFooterView) {
         let updatedResult = resultUpdate(view)
-//        view.update(with: updatedResult)
         view.update(using: updatedResult)
     }
     
