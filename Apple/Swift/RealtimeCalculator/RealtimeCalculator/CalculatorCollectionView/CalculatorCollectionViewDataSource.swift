@@ -115,7 +115,6 @@ class CalculatorCollectionViewDataSourceAdapter: NSObject {
     
     func update(supplementary view: CalculatorResultHeaderFooterView) {
         let updatedResult = resultUpdate(view)
-//        view.update(with: updatedResult)
         view.update(using: updatedResult)
     }
     
@@ -145,7 +144,7 @@ extension CalculatorCollectionViewDataSourceAdapter: UICollectionViewDataSource 
             fatalError()
         }
         let calculatorButton = dataSource[indexPath]
-        calculatorCell.update(with: calculatorButton)
+        calculatorCell.update(with: CalculatorCellUpdate.update(from: calculatorButton))
         return calculatorCell
     }
     

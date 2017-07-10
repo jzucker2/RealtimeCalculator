@@ -8,6 +8,18 @@
 
 import UIKit
 
+struct CalculatorCellUpdate {
+    let text: String
+    let font: UIFont
+    let textColor: UIColor
+    let backgroundColor: UIColor
+    
+    static func update(from displayButton: CalculatorDisplayButton) -> CalculatorCellUpdate {
+        return CalculatorCellUpdate(text: displayButton.displaySymbol, font: UIFont.boldSystemFont(ofSize: 42.0), textColor: displayButton.textColor, backgroundColor: displayButton.backgroundColor)
+    }
+    
+}
+
 class CalculatorCollectionViewCell: UICollectionViewCell {
     
     let displayLabel = UILabel(frame: .zero)
@@ -32,11 +44,18 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(with calculatorButton: CalculatorDisplayButton) {
-        displayLabel.text = calculatorButton.displaySymbol
-        displayLabel.font = UIFont.boldSystemFont(ofSize: 42.0)
-        displayLabel.textColor = calculatorButton.textColor
-        contentView.backgroundColor = calculatorButton.backgroundColor
+//    func update(with calculatorButton: CalculatorDisplayButton) {
+//        displayLabel.text = calculatorButton.displaySymbol
+//        displayLabel.font = UIFont.boldSystemFont(ofSize: 42.0)
+//        displayLabel.textColor = calculatorButton.textColor
+//        contentView.backgroundColor = calculatorButton.backgroundColor
+//        contentView.setNeedsLayout()
+//    }
+    func update(with update: CalculatorCellUpdate) {
+        displayLabel.text = update.text
+        displayLabel.font = update.font
+        displayLabel.textColor = update.textColor
+        contentView.backgroundColor = update.backgroundColor
         contentView.setNeedsLayout()
     }
     
