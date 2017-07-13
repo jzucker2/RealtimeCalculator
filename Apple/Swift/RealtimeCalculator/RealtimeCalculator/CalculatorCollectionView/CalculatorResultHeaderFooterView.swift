@@ -8,6 +8,23 @@
 
 import UIKit
 
+enum UpdateDisplayValue {
+    case result
+    case inputValue
+    case currentTotal
+    
+    var updateKeyPath: KeyPath<CalculatorHeaderFooterUpdate, Double?> {
+        switch self {
+        case .result:
+            return \CalculatorHeaderFooterUpdate.result
+        case .currentTotal:
+            return \CalculatorHeaderFooterUpdate.currentTotal
+        case .inputValue:
+            return \CalculatorHeaderFooterUpdate.inputValue
+        }
+    }
+}
+
 struct CalculatorHeaderFooterUpdate {
     let publisher: String?
     let time: Date?
@@ -42,7 +59,7 @@ class CalculatorResultHeaderFooterView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(using update: CalculatorHeaderFooterUpdate?) {
+    func update(using update: CalculatorHeaderFooterUpdate?, displaying value: UpdateDisplayValue? = .result) {
         if let actualTimestamp = update?.time {
             timeLabel.isHidden = false
             timeLabel.text = DateDisplay.resultHeaderFooterFormatter.string(from: actualTimestamp)
@@ -64,13 +81,19 @@ class CalculatorResultHeaderFooterView: UICollectionReusableView {
 
 final class CalculatorResultFooterView: CalculatorResultHeaderFooterView {
     
-    override func update(using update: CalculatorHeaderFooterUpdate?) {
+    override func update(using update: CalculatorHeaderFooterUpdate?, displaying value: UpdateDisplayValue? = .result) {
         super.update(using: update)
         guard let actualUpdate = update else {
             resultLabel.text = "No result"
             return
         }
-        if let actualResult = actualUpdate.result {
+        if let actualDisplayValue = value {
+            guard let displayValue = actualUpdate[keyPath: actualDisplayValue.updateKeyPath] else {
+                resultLabel.text = "No result"
+                return
+            }
+            resultLabel.text = "\(displayValue)"
+        } else if let actualResult = actualUpdate.result {
             resultLabel.text = "\(actualResult)"
         }
         stackView.setNeedsLayout()
@@ -80,7 +103,7 @@ final class CalculatorResultFooterView: CalculatorResultHeaderFooterView {
 
 final class CalculatorResultHeaderView: CalculatorResultHeaderFooterView {
     
-    override func update(using update: CalculatorHeaderFooterUpdate?) {
+    override func update(using update: CalculatorHeaderFooterUpdate?, displaying value: UpdateDisplayValue? = .result) {
         super.update(using: update)
         guard let actualUpdate = update else {
             resultLabel.text = "No result"

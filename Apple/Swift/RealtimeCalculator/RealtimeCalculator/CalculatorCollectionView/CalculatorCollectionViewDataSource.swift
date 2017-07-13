@@ -152,6 +152,43 @@ struct CalculatorCollectionViewDataSource {
 typealias ResultUpdateBlock = (CalculatorResultHeaderFooterView) -> (CalculatorHeaderFooterUpdate?)
 
 class CalculatorCollectionViewDataSourceAdapter: NSObject {
+    
+    enum SupplementaryViewType {
+        case header
+        case footer
+        
+        func indexPath(from layout: UICollectionViewLayout?) -> IndexPath {
+            guard let calculatorLayout = layout as? CalculatorCollectionViewLayout else {
+                fatalError()
+            }
+            switch self {
+            case .header:
+                return calculatorLayout.resultHeaderIndexPath
+            case .footer:
+                return calculatorLayout.resultFooterIndexPath
+            }
+        }
+        
+        var elementKind: String {
+            switch self {
+            case .header:
+                return UICollectionElementKindSectionHeader
+            case .footer:
+                return UICollectionElementKindSectionFooter
+            }
+        }
+        
+        var viewType: CalculatorResultHeaderFooterView.Type {
+            switch self {
+            case .header:
+                return CalculatorResultHeaderView.self
+            case .footer:
+                return CalculatorResultFooterView.self
+            }
+        }
+        
+    }
+    
     let dataSource: CalculatorCollectionViewDataSource
     weak var collectionView: CalculatorCollectionView?
     let resultUpdate: ResultUpdateBlock
@@ -163,9 +200,21 @@ class CalculatorCollectionViewDataSourceAdapter: NSObject {
         super.init()
     }
     
-    func update(supplementary view: CalculatorResultHeaderFooterView) {
+    func update(to viewType: SupplementaryViewType, displaying value: UpdateDisplayValue? = .result) {
+        let viewIndexPath = viewType.indexPath(from: collectionView?.collectionViewLayout)
+//        guard let footerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: lastFooterIndexPath) as? CalculatorResultFooterView else {
+//            fatalError()
+//        }
+        guard let headerFooterView = self.collectionView?.supplementaryView(forElementKind: viewType.elementKind, at: viewIndexPath) as? CalculatorResultHeaderFooterView else {
+            fatalError()
+        }
+        update(supplementary: headerFooterView, displaying: value)
+    }
+    
+    func update(supplementary view: CalculatorResultHeaderFooterView, displaying value: UpdateDisplayValue? = .result) {
         let updatedResult = resultUpdate(view)
-        view.update(using: updatedResult)
+//        view.update(using: updatedResult)
+        view.update(using: updatedResult, displaying: value)
     }
     
 }

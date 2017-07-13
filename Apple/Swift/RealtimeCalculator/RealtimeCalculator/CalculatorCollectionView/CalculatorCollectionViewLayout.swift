@@ -28,4 +28,7 @@ class CalculatorCollectionViewLayout: UICollectionViewFlowLayout {
         fatalError("init(coder:) has not been implemented")
     }
     
+    let resultHeaderIndexPath = IndexPath(item: 0, section: 0)
+    let resultFooterIndexPath = IndexPath(item: 0, section: 3)
+    
 }

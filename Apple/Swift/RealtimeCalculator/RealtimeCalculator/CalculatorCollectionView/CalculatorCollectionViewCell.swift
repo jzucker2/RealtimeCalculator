@@ -78,7 +78,8 @@ class CalculatorCollectionViewCell: UICollectionViewCell {
     var isGhostSelectedInterface: Bool = false {
         didSet {
             ghostView.isHidden = !isGhostSelectedInterface
-            contentView.setNeedsLayout()
+//            contentView.layoutIfNeeded()
+//            contentView.setNeedsLayout()
         }
     }
     

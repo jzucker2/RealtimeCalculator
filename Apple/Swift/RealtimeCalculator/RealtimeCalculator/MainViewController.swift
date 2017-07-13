@@ -64,11 +64,12 @@ class MainViewController: UIViewController {
         stackView.addArrangedSubview(collectionView)
         collectionView.reloadData()
         self.observingDisplayValueToken = calculator.observe(\.displayValue, changeHandler: { (calculator, change) in
-            let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
-            guard let headerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: firstHeaderIndexPath) as? CalculatorResultHeaderView else {
-                fatalError()
-            }
-            self.dataSourceAdapter.update(supplementary: headerView)
+//            let firstHeaderIndexPath = IndexPath(item: 0, section: 0)
+//            guard let headerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionHeader, at: firstHeaderIndexPath) as? CalculatorResultHeaderView else {
+//                fatalError()
+//            }
+//            self.dataSourceAdapter.update(supplementary: headerView)
+            self.dataSourceAdapter.update(to: .header)
         })
         self.observingLockedOperationValueToken = calculator.observe(\.currentLockedOperationRawValue, changeHandler: { (calculator, change) in
             guard calculator.currentLockedOperation == nil else {
@@ -90,21 +91,143 @@ class MainViewController: UIViewController {
         })
         
         self.observingOtherRemoteResultValueToken = calculator.observe(\.otherResult, changeHandler: { (calculator, change) in
-            let lastFooterIndexPath = IndexPath(item: 0, section: 3)
-            guard let footerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: lastFooterIndexPath) as? CalculatorResultFooterView else {
-                fatalError()
+//            let lastFooterIndexPath = IndexPath(item: 0, section: 3)
+//            guard let footerView = self.collectionView.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: lastFooterIndexPath) as? CalculatorResultFooterView else {
+//                fatalError()
+//            }
+            
+//            if let inputValue = calculator.otherResult?.inputValue {
+//                let updatedIndexPaths = self.dataSource[inputValue]
+//                for indexPath in updatedIndexPaths {
+//                    guard let calculatorCell = self.collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
+//                        fatalError()
+//                    }
+//                    // TODO: Clean this up and add true selection
+//                    calculatorCell.isGhostSelectedInterface = true
+//                }
+//            }
+//            self.dataSourceAdapter.update(supplementary: footerView)
+//            self.dataSourceAdapter.update(supplementary: footerView, displaying: .inputValue)
+            guard let otherResult = calculator.otherResult else {
+                return
             }
-            if let inputValue = calculator.otherResult?.inputValue {
-                let updatedIndexPaths = self.dataSource[inputValue]
-                for indexPath in updatedIndexPaths {
+            guard let inputValue = otherResult.inputValue, let currentTotal = otherResult.currentTotal else {
+                return
+            }
+            let inputValueIndexPaths = self.dataSource[inputValue]
+            let currentTotalIndexPaths = self.dataSource[currentTotal]
+            
+            let buttonPressSelection: (Bool, [IndexPath]) -> (Void) = { (shouldSelect, indexPaths) in
+                for indexPath in indexPaths {
                     guard let calculatorCell = self.collectionView.cellForItem(at: indexPath) as? CalculatorCollectionViewCell else {
                         fatalError()
                     }
-                    // TODO: Clean this up and add true selection
-                    calculatorCell.isGhostSelectedInterface = true
+                    print("buttonPressSelection with shouldSelect: \(shouldSelect), time: \(Date())")
+                    calculatorCell.isGhostSelectedInterface = shouldSelect
+                    calculatorCell.layoutIfNeeded()
                 }
             }
-            self.dataSourceAdapter.update(supplementary: footerView)
+            
+            let animationDuration = 3.0
+            
+            UIView.animateKeyframes(withDuration: 4.0, delay: 0.0, options: [], animations: {
+                let defaultDuration = 1.0/7.0
+                let relativeStartTime: (Int) -> (TimeInterval) = { sequenceNumber in
+                    guard sequenceNumber != 0 else {
+                        return 0.0
+                    }
+//                    return 1.0/(Double(exactly: sequenceNumber)! * defaultDuration)
+                    return 0.0 + defaultDuration * Double(exactly: sequenceNumber)!
+                }
+                UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.25, animations: {
+                    print("1: \(Date())")
+                    buttonPressSelection(true, currentTotalIndexPaths)
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.25, relativeDuration: 0.25, animations: {
+                    print("2: \(Date())")
+                    self.dataSourceAdapter.update(to: .footer, displaying: .currentTotal)
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.50, relativeDuration: 0.25, animations: {
+                    print("3: \(Date())")
+                    buttonPressSelection(false, currentTotalIndexPaths)
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.75, relativeDuration: 0.25, animations: {
+                    print("4: \(Date())")
+                    self.dataSourceAdapter.update(to: .footer, displaying: .result)
+                })
+//                UIView.addKeyframe(withRelativeStartTime: relativeStartTime(0), relativeDuration: defaultDuration, animations: {
+//                    print("1: \(Date())")
+//                    buttonPressSelection(true, currentTotalIndexPaths)
+//                })
+//                UIView.addKeyframe(withRelativeStartTime: relativeStartTime(1), relativeDuration: defaultDuration, animations: {
+//                    print("2: \(Date())")
+//                    self.dataSourceAdapter.update(to: .footer, displaying: .currentTotal)
+//                })
+//                UIView.addKeyframe(withRelativeStartTime: relativeStartTime(2), relativeDuration: defaultDuration, animations: {
+//                    print("3: \(Date())")
+//                    buttonPressSelection(false, currentTotalIndexPaths)
+//                })
+//                UIView.addKeyframe(withRelativeStartTime: relativeStartTime(3), relativeDuration: defaultDuration, animations: {
+//                    buttonPressSelection(true, inputValueIndexPaths)
+//                })
+//                UIView.addKeyframe(withRelativeStartTime: relativeStartTime(4), relativeDuration: defaultDuration, animations: {
+//                    self.dataSourceAdapter.update(to: .footer, displaying: .inputValue)
+//                })
+//                UIView.addKeyframe(withRelativeStartTime: relativeStartTime(5), relativeDuration: defaultDuration, animations: {
+//                    buttonPressSelection(false, inputValueIndexPaths)
+//                })
+//                UIView.addKeyframe(withRelativeStartTime: relativeStartTime(6), relativeDuration: defaultDuration, animations: {
+//                    self.dataSourceAdapter.update(to: .footer, displaying: .result)
+//                })
+            }, completion: { (finished) in
+                print("done: \(Date())")
+            })
+            
+//            UIView.animate(withDuration: animationDuration, animations: {
+//                print("1: \(Date())")
+//                buttonPressSelection(true, currentTotalIndexPaths)
+//            }, completion: { (finished) in
+//                print("2: \(Date())")
+//                print("finished: \(finished)")
+//                UIView.animate(withDuration: animationDuration, animations: {
+//                    print("3: \(Date())")
+//                    buttonPressSelection(false, currentTotalIndexPaths)
+//                }, completion: { (_) in
+//                    print("4: \(Date())")
+//                    UIView.animate(withDuration: animationDuration, animations: {
+//                        print("5: \(Date())")
+//                        self.dataSourceAdapter.update(to: .footer, displaying: .currentTotal)
+//                    }, completion: { (_) in
+//                        print("6: \(Date())")
+//                        UIView.animate(withDuration: animationDuration, animations: {
+//                            print("7: \(Date())")
+//                            buttonPressSelection(true, inputValueIndexPaths)
+//                        }, completion: { (_) in
+//                            print("8: \(Date())")
+//                            UIView.animate(withDuration: animationDuration, animations: {
+//                                print("9: \(Date())")
+//                                buttonPressSelection(false, inputValueIndexPaths)
+//                            }, completion: { (_) in
+//                                print("10: \(Date())")
+//                                UIView.animate(withDuration: animationDuration, animations: {
+//                                    print("11: \(Date())")
+//                                    self.dataSourceAdapter.update(to: .footer, displaying: .inputValue)
+//                                }, completion: { (_) in
+//                                    print("12: \(Date())")
+//                                    UIView.animate(withDuration: animationDuration, animations: {
+//                                        print("13: \(Date())")
+//                                        self.dataSourceAdapter.update(to: .footer, displaying: .result)
+//                                    }, completion: { (_) in
+//                                        print("14: \(Date())")
+//                                        print("done!")
+//                                    })
+//                                })
+//                            })
+//                        })
+//                    })
+//                })
+//            })
+            
         })
         stackView.setNeedsLayout()
     }
@@ -173,8 +296,11 @@ extension MainViewController: UICollectionViewDelegate {
 extension MainViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        guard let layout = collectionViewLayout as? CalculatorCollectionViewLayout else {
+            fatalError()
+        }
         switch section {
-        case 0:
+        case layout.resultHeaderIndexPath.section:
             return CGSize(width: view.bounds.width, height: 100.0)
         default:
             return CGSize.zero
@@ -182,8 +308,11 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        guard let layout = collectionViewLayout as? CalculatorCollectionViewLayout else {
+            fatalError()
+        }
         switch section {
-        case 3:
+        case layout.resultFooterIndexPath.section:
             return CGSize(width: view.bounds.width, height: 100.0)
         default:
             return CGSize.zero
